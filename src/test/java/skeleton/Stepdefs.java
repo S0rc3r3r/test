@@ -47,7 +47,7 @@ public class Stepdefs {
         System.out.println(name);
 
         WebElement nameElement = driver.findElement(factory.model("yourName"));
-        nameElement.sendKeys(name);
+        nameElement.sendKeys("Tanase");
 
     }
 
