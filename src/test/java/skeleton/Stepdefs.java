@@ -71,6 +71,9 @@ public class Stepdefs {
         if (scenario.isFailed()) {
             try {
                 File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+                scenario.embed(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES), "image/png");
+
                 FileUtils.copyFile(scrFile, new File("c:\\tmp\\" + scenario.getName() + ".png"));
             } catch (WebDriverException ex) {
                 System.out.println(ex.getMessage());
