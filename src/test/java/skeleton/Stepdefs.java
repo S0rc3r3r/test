@@ -1,10 +1,7 @@
 package skeleton;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -47,7 +44,7 @@ public class Stepdefs {
         System.out.println(name);
 
         WebElement nameElement = driver.findElement(factory.model("yourName"));
-        nameElement.sendKeys("Tanase");
+        nameElement.sendKeys(name);
 
     }
 
@@ -70,20 +67,15 @@ public class Stepdefs {
 
         if (scenario.isFailed()) {
             try {
-                File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
-                scenario.embed(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES), "image/png");
+                byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                scenario.embed(screenshot, "image/png");
 
-                FileUtils.copyFile(scrFile, new File("c:\\tmp\\" + scenario.getName() + ".png"));
             } catch (WebDriverException ex) {
                 System.out.println(ex.getMessage());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+
+            driver.quit();
         }
-
-        driver.quit();
     }
-
 }
