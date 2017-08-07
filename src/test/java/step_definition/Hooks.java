@@ -1,13 +1,17 @@
 package step_definition;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
@@ -34,19 +38,19 @@ public class Hooks {
         }
         switch (browser) {
             case "chrome":
-                System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
-                /*   DesiredCapabilities capabilities = new DesiredCapabilities();
+                //System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+                DesiredCapabilities capabilities = new DesiredCapabilities();
                 capabilities.setBrowserName(browser);
                 capabilities.setVersion("");
                 capabilities.setPlatform(Platform.WINDOWS);
-                
+
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("disable-infobars");
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-                
-                driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);*/
 
-                driver = new ChromeDriver();
+                driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+
+                //  driver = new ChromeDriver();
                 break;
             case "firefox":
                 driver = new FirefoxDriver();
