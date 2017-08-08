@@ -1,6 +1,7 @@
 package step_definition;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Platform;
@@ -15,6 +16,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
@@ -23,6 +26,7 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
     @Before
     /**
@@ -30,6 +34,15 @@ public class Hooks {
      * shared state between tests
      */
     public void openBrowser() throws MalformedURLException {
+        String useGrid = System.getProperty("USE_GRID");
+        if (useGrid == null) {
+            useGrid = System.getenv("USE_GRID");
+            if (useGrid == null) {
+                useGrid = "true";
+            }
+
+        }
+
         String browser = System.getProperty("BROWSER");
         if (browser == null) {
             browser = System.getenv("BROWSER");
@@ -39,24 +52,25 @@ public class Hooks {
         }
         switch (browser) {
             case "chrome":
-                System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 capabilities.setBrowserName(browser);
                 capabilities.setVersion("");
                 capabilities.setPlatform(Platform.WINDOWS);
-                capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.ACCEPT);
+                capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
 
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("disable-infobars");
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
-                DesiredCapabilities dc = new DesiredCapabilities();
-                dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
-                driver = new ChromeDriver(dc);
-
-                //   driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
-
-                //driver = new ChromeDriver(capabilities);
+                if (Boolean.valueOf(useGrid)) {
+                    LOGGER.info("Starting ChromeDriver using grid");
+                    driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+                    break;
+                }
+                LOGGER.info("Starting ChromeDriver using local installation");
+                System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+                driver = new ChromeDriver(capabilities);
                 break;
             case "firefox":
                 driver = new FirefoxDriver();

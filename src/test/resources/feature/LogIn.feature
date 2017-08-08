@@ -19,7 +19,7 @@
  				error message will be displayed when invalid user provided
   					
   		Given I navigate to Muso LogIn Page
-  		When I enter userName 'validUser'
+  		When I enter userName 'validUser@email.com'
   		And I click on 'forgotten password link'
   		Then an email is sent
   		And I can reset password
