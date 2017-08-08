@@ -41,14 +41,14 @@ public class LogIn {
         loginPage.signIn();
     }
 
-    @Then("^I '(should|shouldn't)' be able to login$")
+    @Then("^I '(should|should not)' be able to login$")
     public void can_I_logIn(String can_login) {
 
         switch (can_login) {
             case "should":
                 assertEquals(true, loginPage.isAlertDisplayed());
                 break;
-            case "shouldn't":
+            case "should not":
                 assertEquals(false, loginPage.isAlertDisplayed());
                 break;
             default:

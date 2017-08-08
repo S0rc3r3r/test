@@ -1,4 +1,4 @@
-  @muso
+  @Login
   Feature: Test Muso Login Page
   
   Scenario Outline: scenario description
@@ -11,6 +11,6 @@
   		Examples:
   		|  username | password | can_login|
   		|  Tanase | 123 | should |
-  		|  Izabella | 321 | shouldn't|
+  		|  Izabella | 321 | should not|
 
  

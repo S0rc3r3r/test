@@ -101,18 +101,20 @@
 								<!-- Directory where the cucumber report files shall be written -->
 								<cucumberOutputDir>target/cucumber-parallel</cucumberOutputDir>
 
-								<!-- <strict>true</strict> -->
+								<strict>true</strict> 
 
-								<tags>
-									<tag>~@ignore</tag>
-								</tags>
+								 <tags>
+									    <tag>${tags}</tag>
+								</tags> 
 
 								<!-- Generate TestNG runners instead of JUnit ones. -->
 								<useTestNG>false</useTestNG>
+								<monochrome>true</monochrome>
 
 								<!-- The naming scheme to use for the generated test classes. One 
 									of 'simple' or 'feature-title' -->
-								<namingScheme>feature-title</namingScheme>
+								  <namingScheme>pattern</namingScheme>
+                                  <namingPattern>{f}_{c}IT</namingPattern>
 								<!-- One of [SCENARIO, FEATURE]. SCENARIO generates one runner per 
 									scenario. FEATURE generates a runner per feature. -->
 								<parallelScheme>FEATURE</parallelScheme>
