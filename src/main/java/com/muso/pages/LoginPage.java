@@ -19,6 +19,9 @@ public class LoginPage extends BasePage {
     @FindBy(css = "div.alert")
     private WebElement alert;
 
+    @FindBy(css = "a.grey")
+    private WebElement resetPassword;
+
     public LoginPage(WebDriver driver) {
         super(driver);
 
@@ -37,6 +40,10 @@ public class LoginPage extends BasePage {
 
     public void signIn() {
         signInButton.click();
+    }
+
+    public void resetPassword() {
+        resetPassword.click();
     }
 
     public String getAlertMessage() {

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.muso.pages.LoginPage;
 import com.paulhammant.ngwebdriver.ByAngular;
@@ -12,8 +14,10 @@ import com.paulhammant.ngwebdriver.NgWebDriver;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import utils.JavaGmailSearchInbox;
 
 public class LogIn {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogIn.class);
 
     private LoginPage loginPage;
     private ByAngular.Factory factory;
@@ -41,19 +45,70 @@ public class LogIn {
         loginPage.signIn();
     }
 
+    @When("^I click on 'forgotten password link'$")
+    public void I_click_on_forgotten_password_link() {
+        LOGGER.warn("I_click_on_forgotten_password_link");
+        loginPage.resetPassword();
+    }
+
+    @When("^I can reset password$")
+    public void I_can_reset_password() {
+        LOGGER.info("Should be able to click on link and reset pass");
+    }
+
     @Then("^I '(should|should not)' be able to login$")
     public void can_I_logIn(String can_login) {
 
         switch (can_login) {
             case "should":
-                assertEquals(true, loginPage.isAlertDisplayed());
+                assertEquals(false, loginPage.isAlertDisplayed());
                 break;
             case "should not":
-                assertEquals(false, loginPage.isAlertDisplayed());
+                assertEquals(true, loginPage.isAlertDisplayed());
                 break;
             default:
                 throw new InvalidArgumentException("Unknown word:" + can_login);
         }
+    }
+
+    private boolean checkEmail() {
+        JavaGmailSearchInbox mail = new JavaGmailSearchInbox();
+        boolean emailFound = false;
+
+        try {
+            emailFound = mail.searchIQPasswordRecoveryEmail("homeautomationstatusinfo@gmail.com", "PacPacCopac!",
+                    30);
+        } catch (Exception e) {
+            LOGGER.error("Exception occured", e);
+            e.printStackTrace();
+        }
+
+        if (emailFound) {
+            LOGGER.info("Found recovery link: " + mail.getManualLink());
+        } else {
+            LOGGER.info("Recovery link not found.");
+        }
+
+        return emailFound;
+    }
+
+    @Then("^an email(?: (.*))? sent$")
+    public void an_email_is_sent(String isEmailSent) {
+
+        LOGGER.warn("an_email_is_sent");
+
+        switch (isEmailSent) {
+            case "is":
+                assertEquals(true, checkEmail());
+                break;
+            case "is not":
+                assertEquals(false, checkEmail());
+                break;
+            default:
+                throw new InvalidArgumentException("Unknown word:" + isEmailSent);
+
+        }
+
     }
 
 }
