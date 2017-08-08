@@ -2,7 +2,11 @@ package step_definition;
 
 import static org.junit.Assert.assertEquals;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +51,23 @@ public class LogIn {
 
     @When("^I click on 'forgotten password link'$")
     public void I_click_on_forgotten_password_link() {
-        LOGGER.warn("I_click_on_forgotten_password_link");
-        loginPage.resetPassword();
+
+        try {
+            loginPage.resetPassword();
+            ((JavascriptExecutor) driver)
+                    .executeScript("window.confirm = function(msg) { return true; }");
+        } catch (UnhandledAlertException f) {
+            try {
+                Alert alert = driver.switchTo().alert();
+                String alertText = alert.getText();
+                LOGGER.info("Alert data: " + alertText);
+                LOGGER.info("Click on OK");
+                alert.accept();
+            } catch (NoAlertPresentException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     @When("^I can reset password$")
@@ -76,7 +95,8 @@ public class LogIn {
         boolean emailFound = false;
 
         try {
-            emailFound = mail.searchIQPasswordRecoveryEmail("homeautomationstatusinfo@gmail.com", "PacPacCopac!",
+            emailFound = mail.searchIQPasswordRecoveryEmail("homeautomationstatusinfo@gmail.com",
+                    "aHyN044RUWeHlodVDE7lOQ==",
                     30);
         } catch (Exception e) {
             LOGGER.error("Exception occured", e);
@@ -94,8 +114,6 @@ public class LogIn {
 
     @Then("^an email(?: (.*))? sent$")
     public void an_email_is_sent(String isEmailSent) {
-
-        LOGGER.warn("an_email_is_sent");
 
         switch (isEmailSent) {
             case "is":

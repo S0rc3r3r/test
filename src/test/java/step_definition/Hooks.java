@@ -1,7 +1,6 @@
 package step_definition;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Platform;
@@ -40,7 +39,7 @@ public class Hooks {
         }
         switch (browser) {
             case "chrome":
-                //System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
+                System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 capabilities.setBrowserName(browser);
                 capabilities.setVersion("");
@@ -51,9 +50,13 @@ public class Hooks {
                 options.addArguments("disable-infobars");
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
-                driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+                DesiredCapabilities dc = new DesiredCapabilities();
+                dc.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+                driver = new ChromeDriver(dc);
 
-                //  driver = new ChromeDriver();
+                //   driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+
+                //driver = new ChromeDriver(capabilities);
                 break;
             case "firefox":
                 driver = new FirefoxDriver();

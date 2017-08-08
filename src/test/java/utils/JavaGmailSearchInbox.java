@@ -62,7 +62,7 @@ public class JavaGmailSearchInbox {
         Session session = Session.getInstance(props);
         session.setDebug(false);
         Store store = session.getStore("imap");
-        store.connect(host, username, tokenString);
+        store.connect(host, username, AESEncrypt.getInstance().decrypt(tokenString));
 
         final long startTime = System.currentTimeMillis() / 1000;
         long currentTime = System.currentTimeMillis() / 1000;
