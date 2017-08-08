@@ -17,7 +17,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5.jar" sourcepath="M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-core/1.2.5/cucumber-core-1.2.5.jar" sourcepath="M2_REPO/info/cukes/cucumber-core/1.2.5/cucumber-core-1.2.5-sources.jar"/>
