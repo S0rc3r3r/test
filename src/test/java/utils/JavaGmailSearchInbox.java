@@ -1,7 +1,4 @@
-/**
- * Copyright (c) 2015 Aol. All rights reserved.
- * 
- **/
+
 package utils;
 
 import java.io.IOException;
@@ -21,11 +18,6 @@ import javax.mail.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- * @author dan.flucus
- *
- */
 public class JavaGmailSearchInbox {
 
     private static final int MAX_NUMBER_OF_MESSAGES = 20;
@@ -35,7 +27,7 @@ public class JavaGmailSearchInbox {
     private String manualLink;
 
     /**
-     * Method searches for IQ password recovery email. It retrurns TRUE is found
+     * Method searches for MUSO password recovery email. It retrurns TRUE is found
      * and FALSE otherwise
      * 
      * @param username
@@ -47,7 +39,7 @@ public class JavaGmailSearchInbox {
      * @return
      * @throws Exception
      */
-    public boolean searchIQPasswordRecoveryEmail(String username, String tokenString,
+    public boolean searchMusoPasswordRecoveryEmail(String username, String tokenString,
             int timeoutSeconds)
             throws Exception {
 

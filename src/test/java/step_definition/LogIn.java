@@ -95,7 +95,7 @@ public class LogIn {
         boolean emailFound = false;
 
         try {
-            emailFound = mail.searchIQPasswordRecoveryEmail("homeautomationstatusinfo@gmail.com",
+            emailFound = mail.searchMusoPasswordRecoveryEmail("homeautomationstatusinfo@gmail.com",
                     "aHyN044RUWeHlodVDE7lOQ==",
                     30);
         } catch (Exception e) {
