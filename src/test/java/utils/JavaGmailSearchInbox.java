@@ -118,12 +118,12 @@ public class JavaGmailSearchInbox {
         int i = 0;
         for (Message message : messages) {
             i++;
-            LOGGER.debug("Found message no #{}", i);
+            LOGGER.info("Found message no #{}", i);
             for (Address address : message.getFrom()) {
-                LOGGER.debug("FROM: " + address.toString());
+                LOGGER.info("FROM: " + address.toString());
             }
             for (Address address : message.getRecipients(RecipientType.TO)) {
-                LOGGER.debug("To: " + address.toString());
+                LOGGER.info("To: " + address.toString());
             }
             LOGGER.debug("Subject: " + message.getSubject());
 
