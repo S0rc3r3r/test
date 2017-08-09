@@ -1,4 +1,4 @@
-  @angular
+  @Angular
   Feature: Test AngularJs Page
   
   Scenario Outline: scenario description

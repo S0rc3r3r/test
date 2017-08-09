@@ -133,11 +133,11 @@ public class JavaGmailSearchInbox {
                 LOGGER.info("Message: /n" + getMessageContent(message));
                 emailFound = true;
                 // Searching for password recovery manual link
-                final String pattern = "try entering this link manually: (.+)";
-                /*   manualLink = RegExpTools.getCustomGroupAllMatches(
-                        getMessageContent(message), pattern, 2).get(0);*/
+                final String pattern = "try entering this link manually: (.+?)(http[s]?)://(.*?)\"";
+                manualLink = RegExpTools.getCustomGroupAllMatches(
+                        getMessageContent(message), pattern, 3).get(0);
 
-                manualLink = RegExpTools.regExpExtractor(getMessageContent(message), pattern);
+                //  manualLink = RegExpTools.regExpExtractor(getMessageContent(message), pattern);
 
                 message.setFlag(Flags.Flag.SEEN, true);
                 message.setFlag(Flags.Flag.DELETED, true);
