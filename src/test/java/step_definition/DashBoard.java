@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.muso.enums.DateRangeType;
 import com.muso.enums.ReportType;
 import com.muso.pages.DashboardPage;
+import com.muso.utils.thread.ThreadHandler;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -28,6 +29,7 @@ public class DashBoard {
 
         dashboardPage = new DashboardPage(driver);
         assertEquals("MUSO Dashboard", dashboardPage.getPageTitle());
+        ThreadHandler.sleep(1000);
 
     }
 

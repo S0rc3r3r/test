@@ -17,8 +17,6 @@ import com.muso.enums.ReportType;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-import utils.ThreadHandler;
-
 public class DashboardPage {
 
     @FindBy(id = "header")
@@ -92,7 +90,7 @@ public class DashboardPage {
     public DashboardPage clickOnReportButton() {
         reportButton.click();
         ngwd.waitForAngularRequestsToFinish();
-        ThreadHandler.sleep(1000);//todo fix this
+        //ThreadHandler.sleep(1000);//todo fix this
         return this;
     }
 

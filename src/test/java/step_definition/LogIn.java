@@ -12,13 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.muso.pages.LoginPage;
+import com.muso.utils.Gmail.JavaGmailSearchInbox;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import utils.JavaGmailSearchInbox;
 
 public class LogIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogIn.class);
