@@ -10,5 +10,5 @@ import cucumber.api.junit.Cucumber;
         "D:/test/test/src/test/resources/feature/MusoDashboard.feature" }, plugin = {
                 "json:D:/test/test/target/1.json" }, monochrome = true, tags = {
                         "@Reports" }, glue = { "step_definition" })
-public class Login_01ITest {
+public class Login_01ITesta {
 }
