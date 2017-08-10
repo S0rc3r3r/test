@@ -61,6 +61,7 @@ public class Hooks {
 
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("disable-infobars");
+                options.addArguments("--start-maximized");
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
                 if (Boolean.valueOf(useGrid)) {

@@ -22,7 +22,7 @@ public class AngularJs {
     private NgWebDriver ngwd;
 
     @Given("^I navigate to AngularJs page$")
-    public void I_navigate_to_AngularJs_page() throws Throwable {
+    public void I_navigate_to_AngularJs_pag() throws Throwable {
         driver.get("https://angularjs.org/");
         driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 

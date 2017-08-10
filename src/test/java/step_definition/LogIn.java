@@ -28,10 +28,21 @@ public class LogIn {
     private NgWebDriver ngwd;
     private WebDriver driver = Hooks.driver;
 
-    @Given("^I navigate to Muso LogIn Page$")
-    public void I_navigate_to_Muso_LogIn_Page() throws Throwable {
-        loginPage = new LoginPage(driver);
-        loginPage.navigateTo();
+    @Given("^I navigate to Muso (LogIn|DashBoard) Page$")
+    public void I_navigate_to_Muso_LogIn_Page(final String page) throws Throwable {
+
+        switch (page) {
+            case "LogIn":
+                loginPage = new LoginPage(driver);
+                loginPage.navigateTo();
+                break;
+            case "DashBoard":
+                break;
+            default:
+                break;
+
+        }
+
     }
 
     @When("^I enter userName '(.+)'$")

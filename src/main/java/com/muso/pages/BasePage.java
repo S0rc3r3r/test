@@ -16,4 +16,5 @@ public class BasePage {
         assertEquals("Login - MUSO", driver.getTitle());
         return new LoginPage(driver);
     }
+
 }
