@@ -64,13 +64,6 @@
 		</dependency>
 		
 		
-		<dependency>
-			<groupId>com.muso</groupId>
-			<artifactId>com.muso.utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>jar</type>
-      		<scope>provided</scope>
-		</dependency>
 
 	</dependencies>
 
