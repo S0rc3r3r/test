@@ -5,7 +5,6 @@
 	<groupId>cucumber</groupId>
 	<artifactId>cucumber-java-skeleton</artifactId>
 	<version>0.0.1</version>
-	<packaging>jar</packaging>
 	<name>Cucumber-Java Skeleton</name>
 
 	<properties>
