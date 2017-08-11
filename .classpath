@@ -84,5 +84,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.muso.utils"/>
+	<classpathentry kind="lib" path="C:/Users/bogdan.tanasoiu/.m2/repository/com/muso/com.muso.utils/0.0.1-SNAPSHOT/com.muso.utils-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
