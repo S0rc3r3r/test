@@ -22,7 +22,7 @@ import com.muso.utils.RegexTools.RegExpTools;
 import com.muso.utils.encryption.AESEncrypt;
 import com.muso.utils.thread.ThreadHandler;
 
-public class JavaGmailSearchInbox {
+public class JavaGmailSearchInboxa {
 
     private static final int MAX_NUMBER_OF_MESSAGES = 20;
     private static final String EMAIL_SUBJECT = "Muso Recovery";
