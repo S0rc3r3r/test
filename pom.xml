@@ -21,8 +21,7 @@
 			<groupId>com.muso</groupId>
 			<artifactId>com.muso.utils</artifactId>
 			<version>0.0.1</version>
-			 <scope>system</scope>
-   			 <systemPath>${project.basedir}/src/main/resources/com.muso.utils-0.0.1.jar</systemPath>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>info.cukes</groupId>
