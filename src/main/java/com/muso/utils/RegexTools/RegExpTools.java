@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegExpToolsa {
+public class RegExpTools {
 
     /**
      * Returns the first group matched using the provided regular expression or

@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 
-public final class AESEncrypta {
+public final class AESEncrypt {
 
     private static final String ALGO = "AES";
     // Encryption key must be a 16 characters string
@@ -20,13 +20,13 @@ public final class AESEncrypta {
 
     private final byte[] keyValueInBytes;
 
-    private final static AESEncrypta INSTANCE = new AESEncrypta();
+    private final static AESEncrypt INSTANCE = new AESEncrypt();
 
-    private AESEncrypta() {
+    private AESEncrypt() {
         keyValueInBytes = KEY.getBytes();
     }
 
-    public static AESEncrypta getInstance() {
+    public static AESEncrypt getInstance() {
         return INSTANCE;
     }
 
