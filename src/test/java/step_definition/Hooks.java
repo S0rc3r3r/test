@@ -23,11 +23,14 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
-    // static String username = "tanasoiubogdan1"; // Your username
-    //  static String authkey = "Wqgm52qvGRiroSxFoxxF";  // Your authkey
 
-    String username = System.getenv("BROWSERSTACK_USER");
-    String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
+    final String username = System.getenv("BROWSERSTACK_USER");
+    final String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
+    final String os = System.getenv("BROWSERSTACK_OS");
+    final String os_version = System.getenv("BROWSERSTACK_OS_VERSION");
+    String browser = System.getenv("BROWSERSTACK_BROWSER");
+    final String buildNo = System.getenv("JENKINS_BUILDNO");
+    String useGrid = System.getProperty("USE_GRID");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
@@ -37,7 +40,10 @@ public class Hooks {
      * shared state between tests
      */
     public void openBrowser() throws MalformedURLException {
-        String useGrid = System.getProperty("USE_GRID");
+
+        LOGGER.info("Using BROWSERSTACK username {} and password {}", username, authkey);
+        LOGGER.info("Using OS: {} ,VERSION:{} ,Jenkins buildNo #{}", os, os_version, buildNo);
+
         if (useGrid == null) {
             useGrid = System.getenv("USE_GRID");
             if (useGrid == null) {
@@ -46,7 +52,6 @@ public class Hooks {
 
         }
 
-        String browser = System.getProperty("BROWSER");
         if (browser == null) {
             browser = System.getenv("BROWSER");
             if (browser == null) {
@@ -71,16 +76,14 @@ public class Hooks {
                     LOGGER.info("Starting ChromeDriver using grid");
                     //driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
 
-                    capabilities.setCapability("build", "1.1");
+                    capabilities.setCapability("build", buildNo);
 
-                    capabilities.setCapability("os", "WINDOWS");
-                    capabilities.setCapability("os_version", "10");
+                    capabilities.setCapability("os", os);
+                    capabilities.setCapability("os_version", os_version);
 
-                    capabilities.setCapability("browser", "firefox");
+                    capabilities.setCapability("browser", browser);
 
                     capabilities.setCapability("browserstack.debug", "true");
-
-                    LOGGER.info("Using username {} and password {}", username, authkey);
 
                     driver = new RemoteWebDriver(
                             new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
