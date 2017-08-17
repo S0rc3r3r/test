@@ -68,12 +68,13 @@ public class Hooks {
                     LOGGER.info("Starting ChromeDriver using grid");
                     //driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
 
-                    capabilities.setCapability("build", "1.0");
-                    capabilities.setCapability("browser_api_name", "IE11");
-                    capabilities.setCapability("os_api_name", "Win10");
-                    capabilities.setCapability("screen_resolution", "1366x768");
-                    capabilities.setCapability("record_video", "false");
-                    capabilities.setCapability("browser", "chrome");
+                    capabilities.setCapability("build", "1.1");
+
+                    capabilities.setCapability("os", "WINDOWS");
+                    capabilities.setCapability("os_version", "10");
+
+                    capabilities.setCapability("browser", "firefox");
+
                     capabilities.setCapability("browserstack.debug", "true");
 
                     driver = new RemoteWebDriver(
