@@ -23,8 +23,8 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
-    static String username = "S0rc3r3r%40gmail.com"; // Your username
-    static String authkey = "u87334c02bae8bec";  // Your authkey
+    static String username = "tanasoiubogdan1"; // Your username
+    static String authkey = "Wqgm52qvGRiroSxFoxxF";  // Your authkey
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
@@ -73,9 +73,11 @@ public class Hooks {
                     capabilities.setCapability("os_api_name", "Win10");
                     capabilities.setCapability("screen_resolution", "1366x768");
                     capabilities.setCapability("record_video", "false");
+                    capabilities.setCapability("browser", "chrome");
+                    capabilities.setCapability("browserstack.debug", "true");
 
                     driver = new RemoteWebDriver(
-                            new URL("http://" + username + ":" + authkey + "@hub.crossbrowsertesting.com:80/wd/hub"),
+                            new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
                             capabilities);
 
                     break;
