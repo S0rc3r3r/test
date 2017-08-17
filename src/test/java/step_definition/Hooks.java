@@ -4,15 +4,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -26,6 +23,9 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
+    static String username = "S0rc3r3r%40gmail.com"; // Your username
+    static String authkey = "u87334c02bae8bec";  // Your authkey
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
     @Before
@@ -54,10 +54,10 @@ public class Hooks {
             case "chrome":
 
                 DesiredCapabilities capabilities = new DesiredCapabilities();
-                capabilities.setBrowserName(browser);
+                /*  capabilities.setBrowserName(browser);
                 capabilities.setVersion("");
                 capabilities.setPlatform(Platform.WINDOWS);
-                capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+                capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);*/
 
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("disable-infobars");
@@ -66,7 +66,18 @@ public class Hooks {
 
                 if (Boolean.valueOf(useGrid)) {
                     LOGGER.info("Starting ChromeDriver using grid");
-                    driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+                    //driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
+
+                    capabilities.setCapability("build", "1.0");
+                    capabilities.setCapability("browser_api_name", "IE11");
+                    capabilities.setCapability("os_api_name", "Win10");
+                    capabilities.setCapability("screen_resolution", "1366x768");
+                    capabilities.setCapability("record_video", "false");
+
+                    driver = new RemoteWebDriver(
+                            new URL("http://" + username + ":" + authkey + "@hub.crossbrowsertesting.com:80/wd/hub"),
+                            capabilities);
+
                     break;
                 }
                 LOGGER.info("Starting ChromeDriver using local installation");
