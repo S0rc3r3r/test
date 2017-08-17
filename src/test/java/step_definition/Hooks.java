@@ -23,8 +23,11 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
-    static String username = "tanasoiubogdan1"; // Your username
-    static String authkey = "Wqgm52qvGRiroSxFoxxF";  // Your authkey
+    // static String username = "tanasoiubogdan1"; // Your username
+    //  static String authkey = "Wqgm52qvGRiroSxFoxxF";  // Your authkey
+
+    String username = System.getenv("BROWSERSTACK_USER");
+    String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
@@ -76,6 +79,8 @@ public class Hooks {
                     capabilities.setCapability("browser", "firefox");
 
                     capabilities.setCapability("browserstack.debug", "true");
+
+                    LOGGER.info("Using username {} and password {}", username, authkey);
 
                     driver = new RemoteWebDriver(
                             new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
