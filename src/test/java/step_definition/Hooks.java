@@ -42,7 +42,7 @@ public class Hooks {
     public void openBrowser() throws MalformedURLException {
 
         LOGGER.info("Using BROWSERSTACK username {} and password {}", username.split("-")[0], authkey);
-        LOGGER.info("Using OS: {} ,VERSION:{} ,Jenkins buildNo #{}", os, os_version, buildNo);
+        LOGGER.info("Using OS: {} ,VERSION:{} , BROWSER:{} , Jenkins buildNo #{}", os, os_version, browser, buildNo);
         LOGGER.info("Accessing HUB: {}", "https://" + username.split("-")[0] + ":" + authkey
                 + "@hub-cloud.browserstack.com/wd/hub");
 
@@ -61,7 +61,7 @@ public class Hooks {
             }
         }
         switch (browser) {
-            case "chrome":
+            case "Chrome":
 
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 /*  capabilities.setBrowserName(browser);
@@ -98,13 +98,13 @@ public class Hooks {
                 System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
                 driver = new ChromeDriver(capabilities);
                 break;
-            case "firefox":
+            case "Firefox":
                 driver = new FirefoxDriver();
                 break;
-            case "ie":
+            case "IE":
                 driver = new InternetExplorerDriver();
                 break;
-            case "safari":
+            case "Safari":
                 driver = new SafariDriver();
                 break;
             default:
