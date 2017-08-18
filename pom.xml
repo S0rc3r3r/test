@@ -95,18 +95,7 @@
 
 
 	<build>
-
-
 		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<groupId>com.browserstack</groupId>
@@ -257,6 +246,25 @@
 										</versionRange>
 										<goals>
 											<goal>generateRunners</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.browserstack
+										</groupId>
+										<artifactId>
+											automate-maven-plugin
+										</artifactId>
+										<versionRange>
+											[0.7.2-SNAPSHOT,)
+										</versionRange>
+										<goals>
+											<goal>test-compile</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

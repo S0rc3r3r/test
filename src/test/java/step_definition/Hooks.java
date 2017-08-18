@@ -86,7 +86,8 @@ public class Hooks {
                     capabilities.setCapability("browserstack.debug", "true");
 
                     driver = new RemoteWebDriver(
-                            new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
+                            new URL("https://" + username.split("-")[0] + ":" + authkey
+                                    + "@hub-cloud.browserstack.com/wd/hub"),
                             capabilities);
 
                     break;
