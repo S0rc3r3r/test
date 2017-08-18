@@ -41,8 +41,10 @@ public class Hooks {
      */
     public void openBrowser() throws MalformedURLException {
 
-        LOGGER.info("Using BROWSERSTACK username {} and password {}", username, authkey);
+        LOGGER.info("Using BROWSERSTACK username {} and password {}", username.split("-")[0], authkey);
         LOGGER.info("Using OS: {} ,VERSION:{} ,Jenkins buildNo #{}", os, os_version, buildNo);
+        LOGGER.info("Accessing HUB: {}", "https://" + username.split("-")[0] + ":" + authkey
+                + "@hub-cloud.browserstack.com/wd/hub");
 
         if (useGrid == null) {
             useGrid = System.getenv("USE_GRID");
