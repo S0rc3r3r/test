@@ -2,14 +2,19 @@ package step_definition;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -23,96 +28,170 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
+    private static final String DEFAULT_OS = "Windows";
+    private static final String DEFAULT_OS_VERSION = "10";
+    private static final String DEFAULT_JENKINS_BUILD = UUID.randomUUID().toString();
+    private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
 
-    final String username = System.getenv("BROWSERSTACK_USER");
-    final String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
-    final String os = System.getenv("BROWSERSTACK_OS");
-    final String os_version = System.getenv("BROWSERSTACK_OS_VERSION");
+    private DesiredCapabilities chromeCapabilities;
+
+    String username = System.getenv("BROWSERSTACK_USER");
+    String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
+    String os = System.getenv("BROWSERSTACK_OS");
+    String os_version = System.getenv("BROWSERSTACK_OS_VERSION");
+    String buildNo = System.getenv("JENKINS_BUILDNO");
     String browser = System.getenv("BROWSERSTACK_BROWSER");
-    final String buildNo = System.getenv("JENKINS_BUILDNO");
-    String useGrid = System.getProperty("USE_GRID");
+    String useGrid = System.getenv("USE_GRID");
+    String application_url = System.getenv("APPLICATION_URL");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
     @Before
-    /**
-     * Delete all cookies at the start of each scenario to avoid
-     * shared state between tests
-     */
-    public void openBrowser() throws MalformedURLException {
+    public void init() throws MalformedURLException {
+        initVars();
+        initBrowser();
+        startBrowser();
+    }
 
-        LOGGER.info("Using BROWSERSTACK username {} and password {}", username.split("-")[0], authkey);
-        LOGGER.info("Using OS: {} ,VERSION:{} , BROWSER:{} , Jenkins buildNo #{}", os, os_version, browser, buildNo);
-        LOGGER.info("Accessing HUB: {}", "https://" + username.split("-")[0] + ":" + authkey
-                + "@hub-cloud.browserstack.com/wd/hub");
+    private void initVars() {
+        LOGGER.info("Starting variables initialization");
 
         if (useGrid == null) {
-            useGrid = System.getenv("USE_GRID");
+            useGrid = System.getProperty("USE_GRID");
             if (useGrid == null) {
-                useGrid = "true";
+                useGrid = "false";
+                LOGGER.info("USE_GRID variable not provided or null. Using default value <false>");
             }
-
         }
 
         if (browser == null) {
-            browser = System.getenv("BROWSER");
+            browser = System.getProperty("BROWSER");
             if (browser == null) {
-                browser = "chrome";
+                browser = "Chrome";
+                LOGGER.info("BROWSERSTACK_BROWSER variable not provided or null. Using default value <chrome>");
             }
         }
-        switch (browser) {
-            case "Chrome":
 
-                DesiredCapabilities capabilities = new DesiredCapabilities();
-                /*  capabilities.setBrowserName(browser);
-                capabilities.setVersion("");
-                capabilities.setPlatform(Platform.WINDOWS);
-                capabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);*/
-
-                ChromeOptions options = new ChromeOptions();
-                options.addArguments("disable-infobars");
-                options.addArguments("--start-maximized");
-                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
-
-                if (Boolean.valueOf(useGrid)) {
-                    LOGGER.info("Starting ChromeDriver using grid");
-                    //driver = new RemoteWebDriver(new URL("http://localhost:5555/wd/hub"), capabilities);
-
-                    capabilities.setCapability("build", buildNo);
-
-                    capabilities.setCapability("os", os);
-                    capabilities.setCapability("os_version", os_version);
-
-                    capabilities.setCapability("browser", browser);
-
-                    capabilities.setCapability("browserstack.debug", "true");
-
-                    driver = new RemoteWebDriver(
-                            new URL("https://" + username.split("-")[0] + ":" + authkey
-                                    + "@hub-cloud.browserstack.com/wd/hub"),
-                            capabilities);
-
-                    break;
-                }
-                LOGGER.info("Starting ChromeDriver using local installation");
-                System.setProperty("webdriver.chrome.driver", "D:\\chromedriver.exe");
-                driver = new ChromeDriver(capabilities);
-                break;
-            case "Firefox":
-                driver = new FirefoxDriver();
-                break;
-            case "IE":
-                driver = new InternetExplorerDriver();
-                break;
-            case "Safari":
-                driver = new SafariDriver();
-                break;
-            default:
-                driver = new ChromeDriver();
-                break;
+        if (application_url == null) {
+            application_url = System.getProperty("APPLICATION_URL");
+            if (application_url == null) {
+                application_url = DEFAULT_APPLICATION_URL;
+                LOGGER.info("APPLICATION_URL variable not provided or null. Using default value <{}>", DEFAULT_APPLICATION_URL);
+            }
         }
-        System.out.println("Opening Browser...." + browser);
+
+        System.setProperty("application_url", application_url);
+
+        if (Boolean.valueOf(useGrid)) {
+            if (username == null) {
+                username = System.getenv("BROWSERSTACK_USER");
+                if (username == null) {
+                    LOGGER.error("BROWSERSTACK_USER variable not provided or null. Unable to proceed");
+                    throw new InvalidArgumentException("BROWSERSTACK_USER variable not provided or null. Unable to proceed");
+                }
+            }
+            if (authkey == null) {
+                authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
+                if (authkey == null) {
+                    LOGGER.error("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable to proceed");
+                    throw new InvalidArgumentException("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable to proceed");
+                }
+            }
+
+            if (os == null) {
+                os = System.getenv("BROWSERSTACK_OS");
+                if (os == null) {
+                    os = DEFAULT_OS;
+                    LOGGER.info("BROWSERSTACK_OS variable not provided or null.Using default value <{}>", DEFAULT_OS);
+
+                }
+            }
+
+            if (os_version == null) {
+                os_version = System.getenv("BROWSERSTACK_OS_VERSION");
+                if (os_version == null) {
+                    os_version = DEFAULT_OS_VERSION;
+                    LOGGER.info("BROWSERSTACK_OS_VERSION variable not provided or null.Using default value <{}>", DEFAULT_OS_VERSION);
+                }
+            }
+
+            if (buildNo == null) {
+                buildNo = System.getenv("JENKINS_BUILDNO");
+                if (buildNo == null) {
+                    buildNo = DEFAULT_JENKINS_BUILD;
+                    LOGGER.info("JENKINS_BUILDNO variable not provided or null.Using random value <{}>", DEFAULT_JENKINS_BUILD);
+                }
+            }
+        }
+    }
+
+    private void initBrowser() throws MalformedURLException {
+        LOGGER.info("Init {} browser capabilities", browser);
+
+        switch (browser) {
+        case "Chrome":
+            chromeCapabilities = new DesiredCapabilities();
+            chromeCapabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("disable-infobars");
+            options.addArguments("--start-maximized");
+            chromeCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
+            chromeCapabilities.setCapability("build", buildNo);
+            chromeCapabilities.setCapability("os", os);
+            chromeCapabilities.setCapability("os_version", os_version);
+            chromeCapabilities.setCapability("browser", browser);
+            chromeCapabilities.setCapability("browserstack.debug", "true");
+            break;
+        case "Firefox":
+
+            break;
+        case "IE":
+
+            break;
+        case "Safari":
+
+            break;
+        default:
+
+            break;
+        }
+
+    }
+
+    private void startBrowser() throws MalformedURLException {
+        switch (browser) {
+        case "Chrome":
+
+            if (Boolean.valueOf(useGrid)) {
+                LOGGER.info("Starting Chrome using GRID URL: https://{}:{}@hub-cloud.browserstack.com/wd/hub", username, authkey);
+                driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
+                        chromeCapabilities);
+            } else {
+                LOGGER.info("Starting ChromeDriver using local install");
+                System.setProperty("webdriver.chrome.driver", "chromeDriver/chromedriver");
+                driver = new ChromeDriver(chromeCapabilities);
+            }
+
+            break;
+        case "Firefox":
+            driver = new FirefoxDriver();
+            break;
+        case "IE":
+            driver = new InternetExplorerDriver();
+            break;
+        case "Safari":
+            driver = new SafariDriver();
+            break;
+        default:
+            driver = new ChromeDriver();
+            break;
+        }
+
         driver.manage().deleteAllCookies();
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+
     }
 
     @After

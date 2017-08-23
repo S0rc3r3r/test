@@ -3,7 +3,7 @@
 
   @Reports
   Scenario: Verify that all Reports options are present
-  		Given I'm located on dashboard page
+  		Given I'm located on dashboard page as 'NORMAL' user
   		When I click on 'Report' button
   		Then I should see 4 available options
   		And 'Anti Piracy Links' option is there
@@ -13,7 +13,7 @@
   	
   @DateRange
   Scenario: Verify that all Date Range options are present
-  		Given I'm located on dashboard page
+  		Given I'm located on dashboard page as 'NORMAL' user
   		When I click on 'Date Range' button
   		Then I should see 8 available options
   		And 'All Time' option is there

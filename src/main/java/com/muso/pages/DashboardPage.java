@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.muso.enums.ReportType;
+import com.muso.enums.UserType;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
@@ -53,15 +54,16 @@ public class DashboardPage {
     protected WebElement reportSelection;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DashboardPage.class);
-    private static final String DASHBOARD_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com/?token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjg1LCJjcmVhdGVkIjoxNDkxMzc2Mjc3NTg2LCJleHAiOjE1MjI5MTYyNzd9.Hrjq0SqgyMWwhXuTNVHxecsUs20kOwUKPJd_kvvl3SewVyKh8hyC0eRX5ubrE48gCAiPbDVmpre5ccXu3U-96A";
     protected WebDriver driver;
     protected ByAngular.Factory factory;
     public NgWebDriver ngwd;
 
-    public DashboardPage(WebDriver driver) {
+    public DashboardPage(WebDriver driver, UserType userType) {
         this.driver = driver;
 
-        navigateTo();
+        final String application_url = System.getProperty("application_url") + "/?token=" + userType.getJwt();
+
+        navigateTo(application_url);
         PageFactory.initElements(driver, this);
 
         ngwd.waitForAngularRequestsToFinish();
@@ -71,8 +73,10 @@ public class DashboardPage {
         ngwd.waitForAngularRequestsToFinish();
     }
 
-    private void navigateTo() {
-        driver.get(DASHBOARD_URL);
+    private void navigateTo(final String dashBoard_Url) {
+        LOGGER.info("Navigate to {}", dashBoard_Url);
+
+        driver.get(dashBoard_Url);
         driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 
         ngwd = new NgWebDriver((JavascriptExecutor) driver).withRootSelector("app-root");
@@ -90,21 +94,21 @@ public class DashboardPage {
     public DashboardPage clickOnReportButton() {
         reportButton.click();
         ngwd.waitForAngularRequestsToFinish();
-        //ThreadHandler.sleep(1000);//todo fix this
+        // ThreadHandler.sleep(1000);//todo fix this
         return this;
     }
 
     public int getAvailableOptions(String type) {
 
         switch (type) {
-            case "Report":
-                List<WebElement> reportElements = reportOptionsHolder.findElements(By.cssSelector("li"));
-                return reportElements.size();
-            case "Date Range":
-                List<WebElement> dateRangeElements = dateRangeHolder.findElements(By.cssSelector("li"));
-                return dateRangeElements.size();
-            default:
-                throw new InvalidArgumentException("Unknown option: " + type);
+        case "Report":
+            List<WebElement> reportElements = reportOptionsHolder.findElements(By.cssSelector("li"));
+            return reportElements.size();
+        case "Date Range":
+            List<WebElement> dateRangeElements = dateRangeHolder.findElements(By.cssSelector("li"));
+            return dateRangeElements.size();
+        default:
+            throw new InvalidArgumentException("Unknown option: " + type);
         }
 
     }
@@ -150,15 +154,15 @@ public class DashboardPage {
         List<WebElement> options;
 
         switch (activePage) {
-            case "Report":
-                options = reportOptionsHolder.findElements(By.cssSelector("li"));
-                break;
-            case "Date Range":
-                options = dateRangeHolder.findElements(By.cssSelector("li"));
-                break;
+        case "Report":
+            options = reportOptionsHolder.findElements(By.cssSelector("li"));
+            break;
+        case "Date Range":
+            options = dateRangeHolder.findElements(By.cssSelector("li"));
+            break;
 
-            default:
-                throw new InvalidArgumentException("Unknown option: " + activePage);
+        default:
+            throw new InvalidArgumentException("Unknown option: " + activePage);
         }
 
         for (WebElement optionName : options) {
@@ -177,15 +181,15 @@ public class DashboardPage {
         List<WebElement> options;
 
         switch (activePage) {
-            case "Report":
-                options = reportOptionsHolder.findElements(By.cssSelector("li"));
-                break;
-            case "Date Range":
-                options = dateRangeHolder.findElements(By.cssSelector("li"));
-                break;
+        case "Report":
+            options = reportOptionsHolder.findElements(By.cssSelector("li"));
+            break;
+        case "Date Range":
+            options = dateRangeHolder.findElements(By.cssSelector("li"));
+            break;
 
-            default:
-                throw new InvalidArgumentException("Unknown option: " + activePage);
+        default:
+            throw new InvalidArgumentException("Unknown option: " + activePage);
         }
 
         for (WebElement optionName : options) {
@@ -203,17 +207,17 @@ public class DashboardPage {
         boolean isOptionSelected = false;
 
         switch (activePage) {
-            case "Report":
-                if (reportSelection.getText().equals(option))
-                    isOptionSelected = true;
-                break;
-            case "Date Range":
-                if (dateRangeSelection.getText().equals(option))
-                    isOptionSelected = true;
-                break;
+        case "Report":
+            if (reportSelection.getText().equals(option))
+                isOptionSelected = true;
+            break;
+        case "Date Range":
+            if (dateRangeSelection.getText().equals(option))
+                isOptionSelected = true;
+            break;
 
-            default:
-                throw new InvalidArgumentException("Unknown option: " + activePage);
+        default:
+            throw new InvalidArgumentException("Unknown option: " + activePage);
         }
 
         return isOptionSelected;

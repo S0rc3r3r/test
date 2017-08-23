@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>cucumber</groupId>
-	<artifactId>cucumber-java-skeleton</artifactId>
+	<groupId>com.muso</groupId>
+	<artifactId>automation</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
-	<name>Cucumber-Java Skeleton</name>
+	<name>Muso - DashBoard automation</name>
 
 	<properties>
 		<java.version>1.7</java.version>
@@ -31,14 +31,13 @@
 	</pluginRepositories>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>info.cukes</groupId>
 			<artifactId>cucumber-java</artifactId>
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>info.cukes</groupId>
 			<artifactId>cucumber-junit</artifactId>
@@ -70,8 +69,6 @@
 			<version>0.7.2-SNAPSHOT</version>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -84,7 +81,6 @@
 			<version>1.7.25</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
@@ -93,10 +89,8 @@
 
 	</dependencies>
 
-
 	<build>
 		<plugins>
-
 			<plugin>
 				<groupId>com.browserstack</groupId>
 				<artifactId>automate-maven-plugin</artifactId>
@@ -205,8 +199,6 @@
 				</executions>
 			</plugin>
 
-
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -218,7 +210,6 @@
 					<compilerArgument>-Werror</compilerArgument>
 				</configuration>
 			</plugin>
-
 
 		</plugins>
 

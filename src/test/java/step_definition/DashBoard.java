@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.muso.enums.DateRangeType;
 import com.muso.enums.ReportType;
+import com.muso.enums.UserType;
 import com.muso.pages.DashboardPage;
-import com.muso.utils.thread.ThreadHandler;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -24,12 +24,11 @@ public class DashBoard {
     private static final Logger LOGGER = LoggerFactory.getLogger(DashBoard.class);
     private DashboardPage dashboardPage;
 
-    @Given("^I'm located on dashboard page$")
-    public void I_am_located_on_dashboard_page() throws Throwable {
+    @Given("^I'm located on dashboard page as '(NORMAL|ADMIN)' user$")
+    public void I_am_located_on_dashboard_page(String userRole) throws Throwable {
 
-        dashboardPage = new DashboardPage(driver);
+        dashboardPage = new DashboardPage(driver, UserType.valueOf(userRole));
         assertEquals("MUSO Dashboard", dashboardPage.getPageTitle());
-        ThreadHandler.sleep(1000);
 
     }
 
@@ -38,20 +37,20 @@ public class DashBoard {
         this.activePage = buttonName;
 
         switch (buttonName) {
-            case "Report":
-                dashboardPage.clickOnReportButton();
-                break;
-            case "Date Range":
-                dashboardPage.clickOnDateRangeButton();
-                break;
-            case "Campaign":
-                dashboardPage.clickOnCampaignButton();
-                break;
-            case "Type":
-                dashboardPage.clickOnTypeButton();
-                break;
-            default:
-                throw new InvalidArgumentException("Unknown button label:" + buttonName);
+        case "Report":
+            dashboardPage.clickOnReportButton();
+            break;
+        case "Date Range":
+            dashboardPage.clickOnDateRangeButton();
+            break;
+        case "Campaign":
+            dashboardPage.clickOnCampaignButton();
+            break;
+        case "Type":
+            dashboardPage.clickOnTypeButton();
+            break;
+        default:
+            throw new InvalidArgumentException("Unknown button label:" + buttonName);
         }
     }
 
@@ -61,12 +60,12 @@ public class DashBoard {
         dashboardPage.getAvailableOptions(activePage);
 
         switch (activePage) {
-            case "Report":
-                assertEquals(activePage + " should have 4 available options.", i, 4);
-                break;
-            case "Date Range":
-                assertEquals(activePage + " should have 8 available options.", i, 8);
-                break;
+        case "Report":
+            assertEquals(activePage + " should have 4 available options.", i, 4);
+            break;
+        case "Date Range":
+            assertEquals(activePage + " should have 8 available options.", i, 8);
+            break;
         }
 
     }
@@ -74,24 +73,20 @@ public class DashBoard {
     @And("^'(.+)' option is there(| selected)?$")
     public void option_is_there(String option, String isDefault) {
         switch (activePage) {
-            case "Report":
-                assertEquals(option + " is not a valid Report option.", true, ReportType.isReportTypeValid(option));
-                assertEquals(option + " is not displayed on UI", true,
-                        dashboardPage.isOptionDisplayed(option, activePage));
-                break;
-            case "Date Range":
-                assertEquals(option + " is not a valid Date Range option.", true,
-                        DateRangeType.isDateRangeTypeValid(option));
-                assertEquals(option + " is not displayed on UI", true,
-                        dashboardPage.isOptionDisplayed(option, activePage));
-                break;
-            default:
-                break;
+        case "Report":
+            assertEquals(option + " is not a valid Report option.", true, ReportType.isReportTypeValid(option));
+            assertEquals(option + " is not displayed on UI", true, dashboardPage.isOptionDisplayed(option, activePage));
+            break;
+        case "Date Range":
+            assertEquals(option + " is not a valid Date Range option.", true, DateRangeType.isDateRangeTypeValid(option));
+            assertEquals(option + " is not displayed on UI", true, dashboardPage.isOptionDisplayed(option, activePage));
+            break;
+        default:
+            break;
         }
 
         if (!isDefault.isEmpty())
-            assertEquals(option + " is not selected.", true,
-                    dashboardPage.isOptionSelected(option, activePage));
+            assertEquals(option + " is not selected.", true, dashboardPage.isOptionSelected(option, activePage));
 
     }
 
