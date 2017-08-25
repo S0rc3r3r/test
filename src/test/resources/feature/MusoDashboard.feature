@@ -3,7 +3,7 @@
 
   @Reports
   Scenario: Verify that all Reports options are present
-  		Given I'm located on dashboard page as 'NORMAL' user
+  		Given I'm located on dashboard page as 'ADMIN' user
   		When I click on 'Report' button
   		Then I should see 4 available options
   		And 'Anti Piracy Links' option is there
