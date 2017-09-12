@@ -1,11 +1,12 @@
 package step_definition;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.InvalidArgumentException;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
@@ -30,8 +31,11 @@ public class Hooks {
     public static RemoteWebDriver driver;
     private static final String DEFAULT_OS = "Windows";
     private static final String DEFAULT_OS_VERSION = "10";
-    private static final String DEFAULT_JENKINS_BUILD = UUID.randomUUID().toString();
+    private static final String DEFAULT_JENKINS_BUILD = "Local";
     private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
+    private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
+    private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
+    private final boolean saveScreenshotLocally = true;
 
     private DesiredCapabilities chromeCapabilities;
 
@@ -47,9 +51,10 @@ public class Hooks {
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
     @Before
-    public void init() throws MalformedURLException {
+    public void init(Scenario scenario) throws MalformedURLException {
+        LOGGER.info("Starting Sccenario: {}", scenario.getName());
         initVars();
-        initBrowser();
+        initBrowser(scenario);
         startBrowser();
     }
 
@@ -86,15 +91,19 @@ public class Hooks {
             if (username == null) {
                 username = System.getenv("BROWSERSTACK_USER");
                 if (username == null) {
-                    LOGGER.error("BROWSERSTACK_USER variable not provided or null. Unable to proceed");
-                    throw new InvalidArgumentException("BROWSERSTACK_USER variable not provided or null. Unable to proceed");
+                    // LOGGER.error("BROWSERSTACK_USER variable not provided or null. Unable to proceed");
+                    // throw new InvalidArgumentException("BROWSERSTACK_USER variable not provided or null. Unable to
+                    // proceed");
+                    username = DEFAULT_BROWSERSTACK_USER;
                 }
             }
             if (authkey == null) {
                 authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
                 if (authkey == null) {
-                    LOGGER.error("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable to proceed");
-                    throw new InvalidArgumentException("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable to proceed");
+                    // LOGGER.error("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable to proceed");
+                    // throw new InvalidArgumentException("BROWSERSTACK_ACCESSKEY variable not provided or null. Unable
+                    // to proceed");
+                    authkey = DEFAULT_BROWSERSTACK_ACCESSKEY;
                 }
             }
 
@@ -125,7 +134,7 @@ public class Hooks {
         }
     }
 
-    private void initBrowser() throws MalformedURLException {
+    private void initBrowser(Scenario scenario) throws MalformedURLException {
         LOGGER.info("Init {} browser capabilities", browser);
 
         switch (browser) {
@@ -138,7 +147,7 @@ public class Hooks {
             options.addArguments("--start-maximized");
             chromeCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
-            chromeCapabilities.setCapability("build", buildNo);
+            chromeCapabilities.setCapability("build", buildNo + " - " + scenario.getName());
             chromeCapabilities.setCapability("os", os);
             chromeCapabilities.setCapability("os_version", os_version);
             chromeCapabilities.setCapability("browser", browser);
@@ -191,6 +200,7 @@ public class Hooks {
 
         driver.manage().deleteAllCookies();
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+        driver.manage().window().maximize();
 
     }
 
@@ -200,15 +210,22 @@ public class Hooks {
      */
     public void embedScreenshot(Scenario scenario) {
         if (scenario.isFailed()) {
+
             try {
                 scenario.write("Current Page URL is " + driver.getCurrentUrl());
                 byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
                 scenario.embed(screenshot, "image/png");
 
-            } catch (WebDriverException ex) {
+                if (saveScreenshotLocally) {
+                    File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                    FileUtils.copyFile(scrFile, new File(scenario.getName() + ".jpg"));
+                }
+
+            } catch (WebDriverException | IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
         driver.quit();
     }
+
 }

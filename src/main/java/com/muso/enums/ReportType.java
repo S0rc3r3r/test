@@ -1,9 +1,13 @@
 package com.muso.enums;
 
+import java.util.ArrayList;
+
 public enum ReportType {
 
-    Infringement_Summary("Infringement Summary"), Anti_Piracy_Links("Anti Piracy Links"), Submit_Infringements(
-            "Submit Infringements"), Market_Analytics("Market Analytics");
+    Infringement_Summary("Infringement Summary"),
+    Anti_Piracy_Links("Anti Piracy Links"),
+    Submit_Infringements("Submit Infringements"),
+    Market_Analytics("Market Analytics");
 
     public static ReportType get(int id) {
         for (ReportType type : values()) {
@@ -42,6 +46,16 @@ public enum ReportType {
             }
         }
         return false;
+    }
+
+    public static ArrayList<String> getAvailableOptions() {
+        ArrayList<String> availableOptions = new ArrayList<String>();
+
+        for (ReportType type : ReportType.values()) {
+            availableOptions.add(type.getText());
+        }
+
+        return availableOptions;
     }
 
 }

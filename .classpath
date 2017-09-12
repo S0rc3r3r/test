@@ -23,7 +23,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5.jar" sourcepath="M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5.jar" sourcepath="/M2_REPO/info/cukes/cucumber-java/1.2.5/cucumber-java-1.2.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-core/1.2.5/cucumber-core-1.2.5.jar" sourcepath="M2_REPO/info/cukes/cucumber-core/1.2.5/cucumber-core-1.2.5-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-html/0.2.3/cucumber-html-0.2.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/info/cukes/cucumber-jvm-deps/1.0.5/cucumber-jvm-deps-1.0.5.jar"/>
@@ -81,6 +81,11 @@
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>

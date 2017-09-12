@@ -1,10 +1,17 @@
 package com.muso.enums;
 
+import java.util.ArrayList;
+
 public enum DateRangeType {
 
-    ALL_TIME("All Time"), LAST_12_MONTHS("Last 12 Months"), LAST_6_MONTHS("Last 6 Months"), LAST_2_MONTHS(
-            "Last 2 Months"), LAST_MONTH(
-                    "Last Month"), LAST_4_WEEKS("Last 4 Weeks"), LAST_WEEK("Last Week"), CUSTOM_RANGE("Custom Range");
+    ALL_TIME("All Time"),
+    LAST_12_MONTHS("Last 12 Months"),
+    LAST_6_MONTHS("Last 6 Months"),
+    LAST_2_MONTHS("Last 2 Months"),
+    LAST_MONTH("Last Month"),
+    LAST_4_WEEKS("Last 4 Weeks"),
+    LAST_WEEK("Last Week"),
+    CUSTOM_RANGE("Custom Range");
 
     public static DateRangeType get(int id) {
         for (DateRangeType type : values()) {
@@ -43,6 +50,16 @@ public enum DateRangeType {
             }
         }
         return false;
+    }
+
+    public static ArrayList<String> getAvailableOptions() {
+        ArrayList<String> availableOptions = new ArrayList<String>();
+
+        for (DateRangeType type : DateRangeType.values()) {
+            availableOptions.add(type.getText());
+        }
+
+        return availableOptions;
     }
 
 }
