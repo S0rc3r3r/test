@@ -141,7 +141,7 @@
 							</tags>
 
 							<!-- Generate TestNG runners instead of JUnit ones. -->
-							<useTestNG>true</useTestNG>
+							<useTestNG>false</useTestNG>
 							<monochrome>true</monochrome>
 
 							<!-- The naming scheme to use for the generated test classes. One 
