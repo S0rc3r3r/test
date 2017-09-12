@@ -215,7 +215,7 @@ public class Hooks {
             try {
                 scenario.write("Current Page URL is " + driver.getCurrentUrl());
                 byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-                scenario.embed(screenshot, "image/jpg");
+                scenario.embed(screenshot, "image/png");
 
                 if (saveScreenshotLocally) {
                     File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
