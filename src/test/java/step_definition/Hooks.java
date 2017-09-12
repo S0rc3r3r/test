@@ -22,6 +22,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cucumber.api.Result;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -35,7 +36,7 @@ public class Hooks {
     private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
-    private final boolean saveScreenshotLocally = true;
+    private final boolean saveScreenshotLocally = false;
 
     private DesiredCapabilities chromeCapabilities;
 
@@ -209,8 +210,9 @@ public class Hooks {
      * Embed a screenshot in test report if test is marked as failed
      */
     public void embedScreenshot(Scenario scenario) {
-        if (scenario.isFailed()) {
-
+        LOGGER.info("Ending scenario: {} . Status: {} - IsFailed {}", scenario.getName(), scenario.getStatus(), scenario.isFailed());
+        if (scenario.getStatus() == Result.Type.FAILED) {
+            LOGGER.info("Saving Screenshot");
             try {
                 scenario.write("Current Page URL is " + driver.getCurrentUrl());
                 byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
