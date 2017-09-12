@@ -22,7 +22,6 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cucumber.api.Result;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -211,12 +210,12 @@ public class Hooks {
      */
     public void embedScreenshot(Scenario scenario) {
         LOGGER.info("Ending scenario: {} . Status: {} - IsFailed {}", scenario.getName(), scenario.getStatus(), scenario.isFailed());
-        if (scenario.getStatus() == Result.Type.FAILED) {
+        if (scenario.isFailed()) {
             LOGGER.info("Saving Screenshot");
             try {
                 scenario.write("Current Page URL is " + driver.getCurrentUrl());
                 byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-                scenario.embed(screenshot, "image/png");
+                scenario.embed(screenshot, "image/jpg");
 
                 if (saveScreenshotLocally) {
                     File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
