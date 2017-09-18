@@ -2,6 +2,8 @@ package com.muso.enums;
 
 import java.util.ArrayList;
 
+import org.openqa.selenium.InvalidArgumentException;
+
 public enum DateRangeType {
 
     ALL_TIME("All Time"),
@@ -40,7 +42,7 @@ public enum DateRangeType {
                 }
             }
         }
-        return null;
+        throw new InvalidArgumentException("Unknown Date Range: " + text);
     }
 
     public static boolean isDateRangeTypeValid(String text) {

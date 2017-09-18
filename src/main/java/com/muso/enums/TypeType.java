@@ -2,6 +2,8 @@ package com.muso.enums;
 
 import java.util.ArrayList;
 
+import org.openqa.selenium.InvalidArgumentException;
+
 public enum TypeType {
 
     ALL("All types", "ALL"),
@@ -52,6 +54,17 @@ public enum TypeType {
         }
 
         return availableOptions;
+    }
+
+    public static TypeType fromString(String text) {
+        if (text != null) {
+            for (TypeType type : TypeType.values()) {
+                if (text.equalsIgnoreCase(type.getText())) {
+                    return type;
+                }
+            }
+        }
+        throw new InvalidArgumentException("Unknown Type: " + text);
     }
 
 }

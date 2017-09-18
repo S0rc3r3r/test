@@ -13,6 +13,8 @@ public enum MenuType {
     CAMPAIGN("Campaign", OPTIONS.CAMPAIGN_OPTIONS),
     PRODUCT("Product", OPTIONS.PRODUCT_OPTIONS),
     TYPE("Type", OPTIONS.TYPE_OPTIONS),
+    REGION("Region", OPTIONS.REGION_OPTIONS),
+    CATEGORY("Piracy Category", OPTIONS.CATEGORY_OPTIONS),
     UNKNOWN("Unknown", OPTIONS.UNKNOWN_OPTIONS);
 
     private MenuType(String name, List<String> options) {
@@ -48,24 +50,26 @@ public enum MenuType {
         throw new IllegalArgumentException(menuName + " menu is not a valid name or not available for the current user");
     }
 
-    public static boolean isOptionValid(String menuName, String optionName) {
+    public boolean isOptionValid(String optionName) {
 
-        MenuType menu = fromString(menuName);
-
-        for (String option : menu.getOptions()) {
+        for (String option : this.getOptions()) {
             if (option.equals(optionName)) {
                 return true;
             }
         }
-        LOGGER.warn("{} is not a valid option for report {}. Available options: {}", optionName, menuName, menu.getOptions().toString());
+        LOGGER.warn("{} is not a valid option for report {}. Available options: {}", optionName, this.getName(), this.getOptions().toString());
         return false;
     }
 
     public static MenuType getMenuFromOption(String optionName) {
+        LOGGER.debug("Searching for filter with {} option", optionName);
         for (MenuType type : MenuType.values()) {
             for (String option : type.getOptions()) {
-                if (option.equals(optionName))
+                if (option.equals(optionName)) {
+                    LOGGER.debug("Found {} filter", type.getName());
                     return type;
+                }
+
             }
         }
 
@@ -74,9 +78,9 @@ public enum MenuType {
         // throw new IllegalArgumentException(optionName + " could not be found in any Menu");
     }
 
-    public static void setMenuOptions(MenuType menuName, List<String> options) {
-
-        menuName.setOptions(options);
+    public void setMenuOptions(List<String> options) {
+        LOGGER.debug("Saving {} options: {}", this.getName(), options.toString());
+        this.setOptions(options);
     }
 
     private static class OPTIONS {
@@ -91,6 +95,10 @@ public enum MenuType {
         private static final List<String> UNKNOWN_OPTIONS = Arrays.asList("");
 
         private static final List<String> TYPE_OPTIONS = TypeType.getAvailableOptions();
+
+        private static final List<String> REGION_OPTIONS = RegionType.getAvailableOptions();
+
+        private static final List<String> CATEGORY_OPTIONS = CategoryType.getAvailableOptions();
 
     }
 

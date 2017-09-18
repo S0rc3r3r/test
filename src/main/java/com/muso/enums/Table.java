@@ -3,11 +3,15 @@ package com.muso.enums;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum Table {
     REMOVAL_DETAILS("Removal Details", COLUMNS.REMOVAL_DETAILS);
 
     private String tableName;
     private List<String> columns;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Table.class);
 
     private Table(String tableName, List<String> columns) {
         this.tableName = tableName;
@@ -33,6 +37,24 @@ public enum Table {
     public String getTableName() {
 
         return this.tableName;
+    }
+
+    public boolean areTableHeadersValid(List<String> headers) {
+
+        if (headers.size() != this.getTableColumns().size()) {
+            LOGGER.error("Headers size for table {} don't match. Expected {} but found {}", this.getTableName(), this.getTableColumns().size(),
+                    headers.size());
+            return false;
+        }
+
+        for (String header : headers)
+            if (!this.getTableColumns().contains(header)) {
+                LOGGER.error("Header name {} is invalid for table {}", header, this.getTableName());
+                return false;
+            }
+
+        return true;
+
     }
 
     private static class COLUMNS {

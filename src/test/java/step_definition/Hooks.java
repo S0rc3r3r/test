@@ -22,6 +22,8 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.persistence.PersistenceManager;
+
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -35,7 +37,7 @@ public class Hooks {
     private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
-    private final boolean saveScreenshotLocally = false;
+    private final boolean saveScreenshotLocally = true;
 
     private DesiredCapabilities chromeCapabilities;
 
@@ -226,6 +228,7 @@ public class Hooks {
                 System.out.println(ex.getMessage());
             }
         }
+        PersistenceManager.getInstance().clear();
         driver.quit();
     }
 
