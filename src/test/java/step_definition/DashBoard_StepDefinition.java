@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.muso.enums.MenuType;
 import com.muso.enums.Table;
+import com.muso.enums.TypeType;
 import com.muso.testers.DashboardTester;
 
 import cucumber.api.java.en.And;
@@ -59,7 +60,7 @@ public class DashBoard_StepDefinition {
     }
 
     @Then("^I should see (\\d+) available options:")
-    public void I_should_see_available_optionsTEST(int i, List<String> options) {
+    public void I_should_see_available_options(int i, List<String> options) {
         List<String> availableOptions;
 
         switch (MenuType.fromString(expandedMenu)) {
@@ -130,18 +131,109 @@ public class DashBoard_StepDefinition {
         }
     }
 
-    @When("^I count '(.+)' I get '(\\d+)'$")
-    public void i_count_i_get(String optionName, long infringements) {
+    @When("^I count '(Total Removals|Last (?:12|6|2)?\\s?Months?|(?:Removals )?Last 4?\\s?Weeks?|Custom Range)' I get '(\\d+)'$")
+    public void i_count_header_info_i_get(String optionName, int infringements) {
+        int compareResult = -1;
+        double actualResult = -1.0;
 
         switch (optionName) {
         case "Total Removals":
-            assertEquals(optionName + " value should be " + infringements, infringements, dashboardTester.getInfringementsTotalRemovals());
+            compareResult = Double.compare(infringements, dashboardTester.getInfringementsTotalRemovals());
+            assertTrue(optionName + " value should be " + infringements, compareResult == 0);
             break;
+        case "Last Week":
         case "Removals Last Week":
-            assertEquals(optionName + " value should be " + infringements, infringements, dashboardTester.getInfringementsLastWeekRemovals());
+            compareResult = Double.compare(infringements, dashboardTester.getInfringementsLastWeekRemovals());
+            assertTrue(optionName + " value should be " + infringements, compareResult == 0);
+            break;
+        case "Custom Range":
+        case "Last 12 Months":
+        case "Last 6 Months":
+        case "Last 2 Months":
+        case "Last Month":
+        case "Last 4 Weeks":
+            actualResult = dashboardTester.getInfringementsCustomRemovals();
+            compareResult = Double.compare(infringements, actualResult);
+            assertTrue(optionName + " value should be " + infringements + " but was " + actualResult, compareResult == 0);
+            break;
+
+        default:
+            throw new InvalidArgumentException("Unknown option name " + optionName);
+        }
+    }
+
+    @When("^I count '(Removals By Type|Removals By Status)' - '(.+)' I get '([0-9]+.?[0-9]+)'$")
+    public void i_count_removals_i_get(String optionType, String optionName, double infringements) {
+
+        int compareResult = -1;
+        double actualResult = -1.0;
+
+        switch (optionType) {
+        case "Removals By Type":
+            assertTrue(optionName + " is not a valid option for TYPE filter", TypeType.isTypeValid(optionName));
+
+            actualResult = dashboardTester.getRemovalByTypeValue(TypeType.fromString(optionName));
+            compareResult = Double.compare(infringements, actualResult);
+
+            if (actualResult == -1.00)
+                assertTrue(optionName + " type has has no value or is not displayed in Removals By Type chart", false);
+
+            assertTrue(optionName + " value should be " + infringements + "% but was " + actualResult + "%", compareResult == 0);
+            break;
+        case "Removals By Status":
+
+            switch (optionName) {
+            case "Complete":
+            case "In progress":
+            case "Aborted":
+                actualResult = dashboardTester.getRemovalByStatusValue(optionName);
+                compareResult = Double.compare(infringements, actualResult);
+
+                if (actualResult == -1.00)
+                    assertTrue(optionName + " type has has no value or is not displayed in Removals By Status chart", false);
+
+                assertTrue(optionName + " value should be " + infringements + "% but was " + actualResult + "%", compareResult == 0);
+            default:
+                throw new InvalidArgumentException(optionName + " is not a valid Status for Removals By Status");
+            }
+
+        default:
+            throw new InvalidArgumentException("Unknown optionTyoe name " + optionType);
+
+        }
+    }
+
+    @When("^I count '(All Time|Last (?:12|6|2)?\\s?Months?|Last 4?\\s?Weeks?|Custom Range)' for (campaign|product) '(.+)' I get '(\\d+)'$")
+    public void i_count_campaigns_or_products_i_get(String period, String optionType, String optionName, long infringements) {
+
+        switch (optionType) {
+        case "campaign":
+            Long actualInfringements = dashboardTester.getCampaignInfringements(optionName, period);
+            assertTrue("There should be " + infringements + " infringements for campaign " + optionName + " using " + period + " filter. But was "
+                    + actualInfringements, infringements == actualInfringements);
+            break;
+        case "product":
+            dashboardTester.getProductInfringements(optionName, period);
             break;
         default:
-            assertEquals(optionName + " value should be " + infringements, infringements, dashboardTester.getInfringementsCustomRemovals());
+            break;
+
+        }
+
+    }
+
+    @Then("^'(.+)' counter is not displayed$")
+    public void counter_is_not_displayed(String counterName) {
+
+        switch (counterName) {
+        case "Total Removals":
+
+            break;
+        case "Removals Last Week":
+
+            break;
+        default:
+
         }
     }
 

@@ -3,7 +3,9 @@ package com.muso.testers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +16,7 @@ import com.muso.dataproviders.UserDataProvider;
 import com.muso.enums.MenuType;
 import com.muso.enums.ReportType;
 import com.muso.enums.Table;
+import com.muso.enums.TypeType;
 import com.muso.models.User;
 import com.muso.pages.AntiPiracyLinksPage.AntiPiracyLinksPage;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPage;
@@ -43,6 +46,7 @@ public class DashboardTester {
 
         final String application_url = System.getProperty("application_url") + "/?token=" + user.getJwt_token();
 
+        LOGGER.info("Navigate to: " + application_url);
         driver.get(application_url);
 
         infringementSummaryPage = new InfringementSummaryPage(driver);
@@ -200,7 +204,7 @@ public class DashboardTester {
         return infringementSummaryPage.getDateRangeOptions();
     }
 
-    public String getProductSelection() {
+    public ArrayList<String> getProductSelection() {
         return infringementSummaryPage.getProductSelection();
     }
 
@@ -250,15 +254,15 @@ public class DashboardTester {
         return true;
     }
 
-    public int getInfringementsTotalRemovals() {
+    public Double getInfringementsTotalRemovals() {
         return infringementSummaryPage.getTotalRemovals();
     }
 
-    public int getInfringementsLastWeekRemovals() {
+    public Double getInfringementsLastWeekRemovals() {
         return infringementSummaryPage.getLastWeekRemovals();
     }
 
-    public int getInfringementsCustomRemovals() {
+    public Double getInfringementsCustomRemovals() {
         return infringementSummaryPage.getCustomRemovals();
     }
 
@@ -304,6 +308,38 @@ public class DashboardTester {
         }
     }
 
+    public HashMap<String, Double> getRemovalsByType() {
+        return infringementSummaryPage.gtRemovalsByType();
+
+    }
+
+    public HashMap<String, Double> getRemovalByStatusValue() {
+        return infringementSummaryPage.gtRemovalsByStatus();
+
+    }
+
+    public Double getRemovalByTypeValue(TypeType type) {
+        HashMap<String, Double> removalsByTypeMap = getRemovalsByType();
+
+        for (Map.Entry<String, Double> entry : removalsByTypeMap.entrySet()) {
+            if (entry.getKey().equals(type.getText())) {
+                return entry.getValue();
+            }
+        }
+        return -1.00;
+    }
+
+    public Double getRemovalByStatusValue(String status) {
+        HashMap<String, Double> removalsByTypeMap = getRemovalsByType();
+
+        for (Map.Entry<String, Double> entry : removalsByTypeMap.entrySet()) {
+            if (entry.getKey().equals(status)) {
+                return entry.getValue();
+            }
+        }
+        return -1.00;
+    }
+
     private void rememberUserCampaign() {
         expandCampaignMenu();
         MenuType.CAMPAIGN.setMenuOptions(infringementSummaryPage.getCampaignOptions());
@@ -311,11 +347,7 @@ public class DashboardTester {
 
     public boolean isFilterApplied(MenuType menu) {
 
-        ReportType reportType = PersistenceManager.getInstance().getReport();
-
-        List<String> selectedOptions = new ArrayList<String>();
-
-        List<String> tableValues = new ArrayList<String>();
+        ArrayList<String> selectedOptions = new ArrayList<String>();
         Date dateFilter = DateUtils.getInstance().getDateNow();
 
         switch (menu) {
@@ -347,17 +379,106 @@ public class DashboardTester {
                 throw new InvalidArgumentException(selectedOptions.get(0) + " was not found or is invalid option for Date Range menu.");
             }
 
+            return isDateRangeFilterApplied(dateFilter);
+
         case CAMPAIGN:
             selectedOptions = getCampaignSelection();
-            break;
+            return isCampaignFilterApplied(selectedOptions);
         case PRODUCT:
-            break;
+            selectedOptions = getProductSelection();
+            return isProductFilterApplied(selectedOptions);
         case TYPE:
+            selectedOptions = getTypeSelection();
+            return isTypeFilterApplied(selectedOptions);
+        default:
+            return false;
+
+        }
+    }
+
+    private boolean isDateRangeFilterApplied(Date filter) {
+
+        ReportType reportType = PersistenceManager.getInstance().getReport();
+
+        switch (reportType) {
+        case Infringement_Summary:
+            break;
+        case Anti_Piracy_Links:
+            return antiPiracyLinksPage.isDateRangeFilterApplied(filter);
+        case Market_Analytics:
+            break;
+        case Submit_Infringements:
             break;
         default:
             break;
+        }
 
+        return false;
+
+    }
+
+    private boolean isCampaignFilterApplied(ArrayList<String> filter) {
+
+        ReportType reportType = PersistenceManager.getInstance().getReport();
+
+        switch (reportType) {
+        case Infringement_Summary:
+            break;
+        case Anti_Piracy_Links:
+            return antiPiracyLinksPage.isCampaignFilterApplied(filter);
+        case Market_Analytics:
+            break;
+        case Submit_Infringements:
+            break;
+        default:
+            break;
         }
         return false;
+    }
+
+    private boolean isProductFilterApplied(ArrayList<String> filter) {
+
+        ReportType reportType = PersistenceManager.getInstance().getReport();
+
+        switch (reportType) {
+        case Infringement_Summary:
+            break;
+        case Anti_Piracy_Links:
+            return antiPiracyLinksPage.isProductFilterApplied(filter);
+        case Market_Analytics:
+            break;
+        case Submit_Infringements:
+            break;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    private boolean isTypeFilterApplied(ArrayList<String> filter) {
+
+        ReportType reportType = PersistenceManager.getInstance().getReport();
+
+        switch (reportType) {
+        case Infringement_Summary:
+            break;
+        case Anti_Piracy_Links:
+            return antiPiracyLinksPage.isTypeFilterApplied(filter);
+        case Market_Analytics:
+            break;
+        case Submit_Infringements:
+            break;
+        default:
+            break;
+        }
+        return false;
+    }
+
+    public Long getCampaignInfringements(String campaignName, String period) {
+        return infringementSummaryPage.getInfringementsByCampaignNameAndPeriod(campaignName, period);
+    }
+
+    public Long getProductInfringements(String productName, String period) {
+        return infringementSummaryPage.getInfringementsByProductNameAndPeriod(productName, period);
     }
 }

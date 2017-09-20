@@ -138,7 +138,7 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
     }
 
     @Override
-    public String getProductSelection() {
+    public ArrayList<String> getProductSelection() {
         collapseAllMenus();
         return super.getProductSelection();
     }

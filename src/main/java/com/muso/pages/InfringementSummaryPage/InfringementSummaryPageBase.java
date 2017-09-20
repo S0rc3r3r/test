@@ -1,5 +1,8 @@
 package com.muso.pages.InfringementSummaryPage;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +21,12 @@ import com.muso.enums.MenuType;
 import com.muso.enums.ReportType;
 import com.muso.pages.General.AbstractBasePage;
 import com.muso.persistence.PersistenceManager;
+import com.muso.utils.list.ListUtils;
+import com.muso.utils.thread.ThreadHandler;
 
 public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfringementSummaryPageBase.class);
+    protected PersistenceManager persistenceManager;
 
     // MENU BUTTONS
     @FindBy(css = "button[title='Report']")
@@ -73,6 +79,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         super(driver);
 
         PageFactory.initElements(driver, this);
+        persistenceManager = PersistenceManager.getInstance();
     }
 
     public boolean isMenuExpanded(MenuType menu) {
@@ -165,6 +172,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
 
     public void setCampaign(String optionName) {
         LOGGER.debug("Selecting {} campaign", optionName);
+        ThreadHandler.sleep(500); // TODO fix this
 
         List<WebElement> campaignElement = campaignOptionsHolder.findElements(By.cssSelector("li"));
 
@@ -278,7 +286,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         return menuSelection.getText();
     }
 
-    public String getProductSelection() {
+    public ArrayList<String> getProductSelection() {
         throw new InvalidArgumentException("NOT IMPLEMENTED");
     }
 
@@ -388,6 +396,60 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         LOGGER.debug(optionsList.toString());
         return optionsList;
 
+    }
+
+    @Override
+    public void checkUIElements() {
+        super.checkUIElements();
+
+        // Verify Report filter selection
+        assertEquals(persistenceManager.getReport().getText() + " is not the default selection for Report.", persistenceManager.getReport().getText(),
+                getReportSelection());
+
+        // Verify Date Range filter selection
+        assertEquals(persistenceManager.getDateRange() + " is not the default selection for DateRange.", persistenceManager.getDateRange(),
+                getDateRangeSelection());
+
+        // Verify Type filter selection
+        assertTrue(persistenceManager.getType() + " is not the default selection for Type.", ListUtils.conpareArrays(getTypeSelection(),
+                persistenceManager.getType()));
+
+        // TODO Add Product filter validation
+
+        // Verify Campaign filter selection and Header
+        verifyCampaignFilterAndHeader();
+
+        // Verify that selected Report is displayed in page Header
+        assertEquals(persistenceManager.getReport().getText() + " is not displayed in page Header.", persistenceManager.getReport().getText(),
+                getReportfromHeader());
+
+        // Verify that selected Date Range is displayed in page Header
+        assertEquals(persistenceManager.getDateRange() + " is not displayed in page Header.", persistenceManager.getDateRange(),
+                getDateRangeFromHeader());
+
+    }
+
+    private void verifyCampaignFilterAndHeader() {
+        ArrayList<String> selectedCampaigns = getCampaignSelection();
+        assertTrue("The number of selected campaign is incorrect.", persistenceManager.getCampaigns().size() == selectedCampaigns.size());
+
+        if (persistenceManager.getCampaigns().size() > 6) {
+            assertEquals("'Multiple campaigns' is not displayed in header", "Multiple campaigns", getCampaignFromHeader());
+        } else {
+            if (persistenceManager.getCampaigns().size() > 0) {
+                for (String expectedCampaign : persistenceManager.getCampaigns()) {
+                    boolean isCampaignFound = false;
+                    for (String selectedCampaign : selectedCampaigns) {
+                        if (expectedCampaign.equals(selectedCampaign)) {
+                            isCampaignFound = true;
+                            break;
+                        }
+                    }
+
+                    assertTrue(expectedCampaign + " should be a selected option under Campaign filter", isCampaignFound);
+                }
+            }
+        }
     }
 
 }

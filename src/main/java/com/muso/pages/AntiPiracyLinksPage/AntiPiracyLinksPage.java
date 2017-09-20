@@ -1,12 +1,8 @@
 package com.muso.pages.AntiPiracyLinksPage;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -14,16 +10,15 @@ import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.muso.enums.Table;
+import com.muso.enums.ReportType;
+import com.muso.pages.General.RemovalDetailsFrame;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPageBase;
 import com.muso.persistence.PersistenceManager;
-import com.muso.utils.list.ListUtils;
-import com.muso.utils.regexTools.RegExpTools;
 
 public class AntiPiracyLinksPage extends InfringementSummaryPageBase {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AntiPiracyLinksPage.class);
-    private final static String REPORT_NAME = "Anti Piracy Links";
-    private PersistenceManager persistenceManager;
+    private final static String REPORT_NAME = ReportType.Anti_Piracy_Links.getText();
+    private RemovalDetailsFrame removalDetailsFrame;
 
     // ANTI PIRACY LINKS
     @FindBy(css = "muso-infringements p")
@@ -56,132 +51,46 @@ public class AntiPiracyLinksPage extends InfringementSummaryPageBase {
         PageFactory.initElements(driver, this);
 
         persistenceManager = PersistenceManager.getInstance();
+        removalDetailsFrame = new RemovalDetailsFrame(driver);
 
         checkUIElements();
     }
 
-    public String getTableName() {
-        return antiPiracy_tableTitle.getText();
-    }
+    @Override
+    public void checkUIElements() {
+        LOGGER.info("{} report is displayed. Checking UI Elements", REPORT_NAME);
+        super.checkUIElements();
 
-    public int getTableRows() {
-        return antiPiracy_tableBody.findElements(By.cssSelector("tr")).size();
-    }
-
-    public Integer getTablePageSize() {
-
-        final String pageSizeDisplayedText = antiPiracy_showNoOfRowsButton.getText();
-        String selectedPageSizeText = "N/A";
-        antiPiracy_showNoOfRowsButton.click();
-
-        for (WebElement pageSizeElement : antiPiracy_showNoOfRowsOptions.findElements(By.cssSelector("li"))) {
-            if (pageSizeElement.getAttribute("class").equals("selected")) {
-                selectedPageSizeText = pageSizeElement.getText();
-                break;
-            }
-        }
-        final String pageSize = RegExpTools.regExpExtractor(pageSizeDisplayedText, "(\\d+)");
-        assertEquals(pageSize + " should be the selected option from pageSize.", pageSize, selectedPageSizeText);
-        return Integer.valueOf(pageSize);
-    }
-
-    public String getTableDisplayPage() {
-        return antiPiracy_currentPage.getText();
-    }
-
-    public int getPages() {
-        return (driver.findElements(By.className("pages"))).size();
-    }
-
-    public boolean isTableHeaderValid(Table table) {
-        ArrayList<String> tableHeaders = getTableHeader(table);
-        return Table.REMOVAL_DETAILS.areTableHeadersValid(tableHeaders);
-    }
-
-    private ArrayList<String> getTableHeader(Table table) {
-        ArrayList<String> tableHeader = new ArrayList<>();
-        switch (table) {
-        case REMOVAL_DETAILS:
-            for (WebElement element : antiPiracy_tableHeader.findElements(By.cssSelector("th")))
-                tableHeader.add(element.getText());
-        default:
-            return tableHeader;
-        }
-    }
-
-    public int getRemovalCount() {
-        List<WebElement> tableRows = antiPiracy_tableBody.findElements(By.cssSelector("tr"));
-        return tableRows.size();
+        removalDetailsFrame.verifyRemovalDetailsTable();
     }
 
     public AntiPiracyLinksPage setRowsToDisplay(int rows) {
-        if (!isMenuExpanded(antiPiracy_showNoOfRowsButton)) {
-            antiPiracy_showNoOfRowsButton.click();
-        }
-        setRowsToDisplayOption(rows);
+        removalDetailsFrame.setRowsToDisplay(rows);
         return this;
     }
 
-    // PRIVATE METHODS
-    private void setRowsToDisplayOption(int rows) {
-
-        List<WebElement> rowsToDisplayOptions = antiPiracy_showNoOfRowsOptions.findElements(By.cssSelector("li"));
-
-        for (WebElement option : rowsToDisplayOptions) {
-            if (option.getText().equals(String.valueOf(rows))) {
-                option.click();
-            }
-        }
+    public int getPages() {
+        return removalDetailsFrame.getPages();
     }
 
-    private void verifyRemovalDetailsTable() {
-        LOGGER.debug("Verifying {} table", Table.REMOVAL_DETAILS.getTableName());
-        assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table is not displayed on " + REPORT_NAME + " page.", getTableName().equals(
-                Table.REMOVAL_DETAILS.getTableName()));
-        assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table headers are invalid or incomplete", isTableHeaderValid(Table.REMOVAL_DETAILS));
-        // TODO remove the comment when MKV-289 is fixed
-        // assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
-        assertEquals(Table.REMOVAL_DETAILS.getTableName() + " table should show result from page 1\n", "1", getTableDisplayPage());
+    public int getTableRows() {
+        return removalDetailsFrame.getTableRows();
     }
 
-    private void verifyCampaigns() {
-        ArrayList<String> selectedCampaigns = getCampaignSelection();
-        assertTrue("The number of selected campaign is incorrect.", persistenceManager.getCampaigns().size() == selectedCampaigns.size());
-
-        if (persistenceManager.getCampaigns().size() > 6) {
-            assertEquals("'Multiple campaigns' is not displayed in header", "Multiple campaigns", getCampaignFromHeader());
-        } else {
-            if (persistenceManager.getCampaigns().size() > 0) {
-                for (String expectedCampaign : persistenceManager.getCampaigns()) {
-                    boolean isCampaignFound = false;
-                    for (String selectedCampaign : selectedCampaigns) {
-                        if (expectedCampaign.equals(selectedCampaign)) {
-                            isCampaignFound = true;
-                            break;
-                        }
-                    }
-
-                    assertTrue(expectedCampaign + " should be a selected option under Campaign filter", isCampaignFound);
-                }
-            }
-        }
+    public boolean isDateRangeFilterApplied(Date dateFilter) {
+        return removalDetailsFrame.isDateRangeFilterApplied(dateFilter);
     }
 
-    public void checkUIElements() {
-        LOGGER.info("{} report is displayed. Checking UI Elements", REPORT_NAME);
+    public boolean isCampaignFilterApplied(ArrayList<String> campaigns) {
+        return removalDetailsFrame.isCampaignFilterApplied(campaigns);
+    }
 
-        assertEquals(persistenceManager.getReport().getText() + " is not the default selection for Report.", persistenceManager.getReport().getText(),
-                getReportSelection());
-        assertEquals(persistenceManager.getDateRange() + " is not the default selection for DateRange.", persistenceManager.getDateRange(),
-                getDateRangeSelection());
-        assertTrue(persistenceManager.getType() + " is not the default selection for Type.", ListUtils.conpareArrays(getTypeSelection(),
-                persistenceManager.getType()));
+    public boolean isProductFilterApplied(ArrayList<String> products) {
+        return removalDetailsFrame.isProductFilterApplied(products);
+    }
 
-        assertTrue("MUSO Logo is not displayed in page header", isLogoDisplayed());
-
-        verifyRemovalDetailsTable();
-        verifyCampaigns();
-
+    public boolean isTypeFilterApplied(ArrayList<String> types) {
+        return removalDetailsFrame.isTypeFilterApplied(types);
     }
 
 }

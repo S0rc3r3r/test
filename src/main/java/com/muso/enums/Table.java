@@ -1,13 +1,18 @@
 package com.muso.enums;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.persistence.PersistenceManager;
+
 public enum Table {
-    REMOVAL_DETAILS("Removal Details", COLUMNS.REMOVAL_DETAILS);
+    REMOVAL_DETAILS("Removal Details", COLUMNS.REMOVAL_DETAILS),
+    PRODUCTS("Products", COLUMNS.PRODUCTS),
+    CAMPAIGNS("Campaigns", COLUMNS.CAMPAIGNS);
 
     private String tableName;
     private List<String> columns;
@@ -30,8 +35,14 @@ public enum Table {
         return null;
     }
 
-    public List<String> getTableColumns() {
-        return this.columns;
+    public ArrayList<String> getTableColumns() {
+        final ArrayList<String> columns = new ArrayList<String>(this.columns);
+
+        if (this == CAMPAIGNS || this == PRODUCTS) {
+            columns.add(2, PersistenceManager.getInstance().getDateRange());
+            return columns;
+        }
+        return columns;
     }
 
     public String getTableName() {
@@ -49,7 +60,7 @@ public enum Table {
 
         for (String header : headers)
             if (!this.getTableColumns().contains(header)) {
-                LOGGER.error("Header name {} is invalid for table {}", header, this.getTableName());
+                LOGGER.warn("Header name {} is invalid for table {}", header, this.getTableName());
                 return false;
             }
 
@@ -61,6 +72,9 @@ public enum Table {
 
         private static final List<String> REMOVAL_DETAILS = Arrays.asList("Campaign", "Product", "Link", "Type", "Referrer", "Takedown sent",
                 "Status");
+        private static final List<String> CAMPAIGNS = Arrays.asList("Campaign", "All Time", "Last Week");
+
+        private static final List<String> PRODUCTS = Arrays.asList("Product", "All Time", "Last Week");
 
     }
 

@@ -1,5 +1,7 @@
 package com.muso.pages.General;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -18,16 +20,16 @@ public abstract class AbstractBasePage {
 
     // HEADERS
     @FindBy(css = "#header h4")
-    protected WebElement reportInfo;
+    protected WebElement reportHeaderElement;
 
     @FindBy(css = "h2.allCampaigns")
-    protected WebElement campaignInfo;
+    protected WebElement campaignHeaderElement;
 
     @FindBy(css = "h2.dateRange")
-    protected WebElement dateRangeInfo;
+    protected WebElement dateRangeHeaderElement;
 
     @FindBy(css = "#header img")
-    protected WebElement logoImg;
+    protected WebElement logoHeaderElement;
 
     protected ByAngular.Factory factory;
     protected NgWebDriver ngwd;
@@ -66,28 +68,33 @@ public abstract class AbstractBasePage {
     }
 
     public String getDateRangeFromHeader() {
-        LOGGER.debug("Date Range displayed in header: {}", dateRangeInfo.getText());
-        return dateRangeInfo.getText();
+        LOGGER.debug("Date Range displayed in header: {}", dateRangeHeaderElement.getText());
+        return dateRangeHeaderElement.getText();
     }
 
     public String getCampaignFromHeader() {
-        LOGGER.debug("Campaign displayed in header: {}", campaignInfo.getText());
-        return campaignInfo.getText();
+        LOGGER.debug("Campaign displayed in header: {}", campaignHeaderElement.getText());
+        return campaignHeaderElement.getText();
     }
 
     public String getReportfromHeader() {
-        LOGGER.debug("Report displayed in header: {}", reportInfo.getText());
-        return reportInfo.getText();
+        LOGGER.debug("Report displayed in header: {}", reportHeaderElement.getText());
+        return reportHeaderElement.getText();
     }
 
     public boolean isLogoDisplayed() {
-        if (logoImg.getAttribute("src").contains("assets/images/logo.png"))
+        if (logoHeaderElement.getAttribute("src").contains("assets/images/logo.png"))
             return true;
         return false;
     }
 
     public String getPageTitle() {
         return driver.getTitle();
+    }
+
+    public void checkUIElements() {
+        // Verify MUSO LOGO is displayed
+        assertTrue("MUSO Logo is not displayed in page header", isLogoDisplayed());
     }
 
 }
