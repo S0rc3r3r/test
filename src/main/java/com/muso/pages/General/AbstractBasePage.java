@@ -4,14 +4,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.persistence.PersistenceManager;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
@@ -32,6 +36,7 @@ public abstract class AbstractBasePage {
     protected WebElement logoHeaderElement;
 
     protected ByAngular.Factory factory;
+    protected PersistenceManager persistenceManager;
     protected NgWebDriver ngwd;
     protected WebDriver driver;
 
@@ -44,15 +49,18 @@ public abstract class AbstractBasePage {
 
     protected AbstractBasePage(WebDriver driver) {
         this.driver = driver;
+        driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
+
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("header")));
 
         PageFactory.initElements(driver, this);
-
-        driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 
         ngwd = new NgWebDriver((JavascriptExecutor) driver).withRootSelector("app-root");
         ngwd.waitForAngularRequestsToFinish();
 
         factory = ngwd.makeByAngularFactory();
+        persistenceManager = PersistenceManager.getInstance();
     }
 
     private void navigateTo(final String dashBoard_Url) {
@@ -65,6 +73,7 @@ public abstract class AbstractBasePage {
         ngwd.waitForAngularRequestsToFinish();
 
         factory = ngwd.makeByAngularFactory();
+        persistenceManager = PersistenceManager.getInstance();
     }
 
     public String getDateRangeFromHeader() {

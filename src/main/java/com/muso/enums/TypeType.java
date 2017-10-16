@@ -20,6 +20,7 @@ public enum TypeType {
     SEARCH_ENGINE("Search engine", "SearchEngine"),
     GOOGLE("Google", "SearchEngine"),
     SEARCH_RESULT("Search result", "SearchResult"),
+    SEARCH_ENGINE_DELISTINGS("Search Engine Delistings", null),
     MP3("Mp3", "SearchResult");
 
     private String text, group;

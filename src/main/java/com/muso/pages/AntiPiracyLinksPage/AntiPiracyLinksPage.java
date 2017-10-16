@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.muso.enums.ReportType;
 import com.muso.pages.General.RemovalDetailsFrame;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPageBase;
-import com.muso.persistence.PersistenceManager;
 
 public class AntiPiracyLinksPage extends InfringementSummaryPageBase {
     protected static final Logger LOGGER = LoggerFactory.getLogger(AntiPiracyLinksPage.class);
@@ -50,7 +49,6 @@ public class AntiPiracyLinksPage extends InfringementSummaryPageBase {
 
         PageFactory.initElements(driver, this);
 
-        persistenceManager = PersistenceManager.getInstance();
         removalDetailsFrame = new RemovalDetailsFrame(driver);
 
         checkUIElements();

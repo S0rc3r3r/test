@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
@@ -34,6 +35,7 @@ public class Hooks {
     private static final String DEFAULT_OS = "Windows";
     private static final String DEFAULT_OS_VERSION = "10";
     private static final String DEFAULT_JENKINS_BUILD = "Local";
+    private static final String DEFAULT_CHROME_VERSION = "61";
     private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
@@ -47,6 +49,7 @@ public class Hooks {
     String os_version = System.getenv("BROWSERSTACK_OS_VERSION");
     String buildNo = System.getenv("JENKINS_BUILDNO");
     String browser = System.getenv("BROWSERSTACK_BROWSER");
+    String browser_version = System.getenv("BROWSERSTACK_BROWSER_VERSION");
     String useGrid = System.getenv("USE_GRID");
     String application_url = System.getenv("APPLICATION_URL");
 
@@ -54,6 +57,7 @@ public class Hooks {
 
     @Before
     public void init(Scenario scenario) throws MalformedURLException {
+
         LOGGER.info("Starting Sccenario: {}", scenario.getName());
         initVars();
         initBrowser(scenario);
@@ -76,6 +80,20 @@ public class Hooks {
             if (browser == null) {
                 browser = "Chrome";
                 LOGGER.info("BROWSERSTACK_BROWSER variable not provided or null. Using default value <chrome>");
+            }
+        }
+
+        if (browser_version == null) {
+            browser_version = System.getProperty("BROWSERSTACK_BROWSER_VERSION");
+            if (browser_version == null) {
+                switch (browser) {
+                case "Chrome":
+                    browser_version = DEFAULT_CHROME_VERSION;
+                    LOGGER.info("BROWSERSTACK_BROWSER_VERSION variable not provided or null. Using default value " + DEFAULT_CHROME_VERSION);
+                    break;
+                default:
+                    throw new InvalidArgumentException("Please add default browser version for browser " + browser);
+                }
             }
         }
 
@@ -153,20 +171,18 @@ public class Hooks {
             chromeCapabilities.setCapability("os", os);
             chromeCapabilities.setCapability("os_version", os_version);
             chromeCapabilities.setCapability("browser", browser);
+            chromeCapabilities.setCapability("version", browser_version);
             chromeCapabilities.setCapability("browserstack.debug", "true");
             break;
         case "Firefox":
 
-            break;
         case "IE":
 
-            break;
         case "Safari":
 
-            break;
         default:
+            throw new InvalidArgumentException(browser + " is not configured in HOOKS.Please configure");
 
-            break;
         }
 
     }

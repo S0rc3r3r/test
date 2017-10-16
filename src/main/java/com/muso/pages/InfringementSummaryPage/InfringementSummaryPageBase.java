@@ -20,13 +20,11 @@ import com.muso.enums.DateRangeType;
 import com.muso.enums.MenuType;
 import com.muso.enums.ReportType;
 import com.muso.pages.General.AbstractBasePage;
-import com.muso.persistence.PersistenceManager;
 import com.muso.utils.list.ListUtils;
 import com.muso.utils.thread.ThreadHandler;
 
 public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfringementSummaryPageBase.class);
-    protected PersistenceManager persistenceManager;
 
     // MENU BUTTONS
     @FindBy(css = "button[title='Report']")
@@ -57,16 +55,13 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     @FindBy(css = "muso-report-filter ul.dropdown-menu.inner")
     protected WebElement reportOptionsHolder;
 
-    @FindBy(css = "#period-container > div div.ranges")
+    @FindBy(css = "muso-period-filter div.daterangepicker.dropdown-menu.opensleft")
     protected WebElement dateRangeOptionsHolder;
-
-    @FindBy(css = "#period-container div.daterangepicker.dropdown-menu.opensleft")
-    protected WebElement dateRangeOptionsPicker;
 
     @FindBy(css = "muso-campaign-filter ul.dropdown-menu.inner")
     protected WebElement campaignOptionsHolder;
 
-    @FindBy(css = "muso-campaign-filter div.bs-searchbox")
+    @FindBy(css = "muso-campaign-filter input.form-control")
     protected WebElement campaignSearchBox;
 
     @FindBy(css = "muso-filter-type ul.dropdown-menu.inner")
@@ -75,11 +70,17 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     @FindBy(css = "muso-filter-type div.bs-searchbox")
     protected WebElement typeSearchBox;
 
+    @FindBy(css = "muso-product-filter ul.dropdown-menu.inner")
+    protected WebElement productOptionsHolder;
+
+    @FindBy(css = "muso-product-filter div.bs-searchbox")
+    protected WebElement productSearchBox;
+
     public InfringementSummaryPageBase(WebDriver driver) {
         super(driver);
 
         PageFactory.initElements(driver, this);
-        persistenceManager = PersistenceManager.getInstance();
+
     }
 
     public boolean isMenuExpanded(MenuType menu) {
@@ -87,11 +88,11 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         case REPORT:
             return isMenuExpanded(reportOptionsHolder);
         case DATE_RANGE:
-            return isMenuExpanded(dateRangeOptionsPicker);
+            return isMenuExpanded(dateRangeOptionsHolder);
         case CAMPAIGN:
             return isMenuExpanded(campaignOptionsHolder);
         case PRODUCT:
-            return isMenuExpanded(ProductMenuButton); // TODO update with the holder
+            return isMenuExpanded(productOptionsHolder); // TODO update with the holder
         case TYPE:
             return isMenuExpanded(typeOptionsHolder);
         default:
@@ -119,7 +120,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             clickOnReportMenuButton();
             return;
         }
-        if (isMenuExpanded(dateRangeOptionsPicker)) {
+        if (isMenuExpanded(dateRangeOptionsHolder)) {
             clickOnDateRangeMenuButton();
             return;
         }
@@ -127,7 +128,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             clickOnCampaignMenuButton();
             return;
         }
-        if (isMenuExpanded(ProductMenuButton)) {
+        if (isMenuExpanded(productOptionsHolder)) {
             clickOnProductMenuButton();
             return;
         }
@@ -150,6 +151,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     public void clickOnCampaignMenuButton() {
         LOGGER.debug("Clicking on Campaign menu button");
         CampaignMenuButton.click();
+        // ThreadHandler.sleep(500); // TODO fix this
     }
 
     public void clickOnReportMenuButton() {
@@ -166,20 +168,20 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         LOGGER.debug("Selecting {} report", optionName);
         WebElement reportElement = driver.findElement(factory.cssContainingText("span.text", optionName));
         reportElement.click();
-        PersistenceManager.getInstance().setReport(ReportType.fromString(optionName));
+        persistenceManager.setReport(ReportType.fromString(optionName));
 
     }
 
     public void setCampaign(String optionName) {
         LOGGER.debug("Selecting {} campaign", optionName);
-        ThreadHandler.sleep(500); // TODO fix this
+        // ThreadHandler.sleep(500); // TODO fix this
 
         List<WebElement> campaignElement = campaignOptionsHolder.findElements(By.cssSelector("li"));
 
         for (WebElement element : campaignElement) {
             if (element.getText().equals(optionName)) {
                 element.click();
-                PersistenceManager.getInstance().addCampaign(optionName);
+                persistenceManager.addCampaign(optionName);
                 break;
             }
         }
@@ -192,14 +194,15 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
 
         WebElement dateRangeElement = dateRangeOptionsHolder.findElement(factory.cssContainingText("li", optionName));
         dateRangeElement.click();
-        PersistenceManager.getInstance().setDateRange(DateRangeType.fromString(optionName));
+        persistenceManager.setDateRange(DateRangeType.fromString(optionName));
 
+        ThreadHandler.sleep(1000);// todo remove this
     }
 
     public void setProduct(String optionName) {
 
         LOGGER.debug("Selecting {} product", optionName);
-        PersistenceManager.getInstance().addProduct(optionName);
+        persistenceManager.addProduct(optionName);
         throw new InvalidArgumentException("FUNCTIONALITY NOT IMPLEMENTED");
     }
 
@@ -209,14 +212,13 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
 
         WebElement typeElement = typeOptionsHolder.findElement(factory.cssContainingText("li", optionName));
         typeElement.click();
-        PersistenceManager.getInstance().setType(optionName);
+        persistenceManager.setType(optionName);
 
     }
 
     protected boolean isMenuExpanded(WebElement menuElement) {
 
-        if (Boolean.valueOf(menuElement.getAttribute("aria-expanded")) || Boolean.valueOf(menuElement.getAttribute("style").contains(
-                "display: block"))) {
+        if (Boolean.valueOf(menuElement.getAttribute("aria-expanded")) || Boolean.valueOf(menuElement.getAttribute("style").contains("display: block"))) {
             return true;
         }
         return false;
@@ -243,7 +245,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         return menuSelection.getText();
     }
 
-    public ArrayList<String> getCampaignSelection() {
+    public int getCampaignSelectionNumber() {
 
         if (!isMenuExpanded(MenuType.CAMPAIGN)) {
             collapseAllMenus();
@@ -261,6 +263,31 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
                 selectedCampaigns.add(disabledItem.getText());
             }
 
+            for (WebElement selectedItem : selectedElements) {
+                if (!selectedItem.findElement(By.cssSelector("a")).getAttribute("class").equals("dropdown-header")) {
+                    selectedCampaigns.add(selectedItem.getText());
+                }
+            }
+        }
+
+        LOGGER.info("Found {} campaigns selected: {}", selectedCampaigns.size(), selectedCampaigns.toString());
+
+        return selectedCampaigns.size();
+    }
+
+    public ArrayList<String> getCampaignFilterSelectedOptions() {
+
+        if (!isMenuExpanded(MenuType.CAMPAIGN)) {
+            collapseAllMenus();
+            clickOnCampaignMenuButton();
+        }
+
+        ArrayList<String> selectedCampaigns = new ArrayList<String>();
+        List<WebElement> selectedElements = campaignOptionsHolder.findElements(By.className("selected"));
+
+        if (selectedElements.isEmpty()) {
+            selectedCampaigns.add("All campaigns");
+        } else {
             for (WebElement selectedItem : selectedElements) {
                 if (!selectedItem.getAttribute("class").equals("dropdown-header")) {
                     selectedCampaigns.add(selectedItem.getText());
@@ -280,7 +307,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             clickOnDateRangeMenuButton();
         }
 
-        WebElement menuSelection = dateRangeOptionsHolder.findElement(By.className("active"));
+        WebElement menuSelection = dateRangeOptionsHolder.findElement(By.cssSelector("li.active"));
         LOGGER.debug("Date Range filter has the following options selected: {}", menuSelection.getText());
 
         return menuSelection.getText();
@@ -403,16 +430,13 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         super.checkUIElements();
 
         // Verify Report filter selection
-        assertEquals(persistenceManager.getReport().getText() + " is not the default selection for Report.", persistenceManager.getReport().getText(),
-                getReportSelection());
+        assertEquals(persistenceManager.getReport().getText() + " is not the default selection for Report.", persistenceManager.getReport().getText(), getReportSelection());
 
         // Verify Date Range filter selection
-        assertEquals(persistenceManager.getDateRange() + " is not the default selection for DateRange.", persistenceManager.getDateRange(),
-                getDateRangeSelection());
+        assertEquals(persistenceManager.getDateRange() + " is not the default selection for DateRange.", persistenceManager.getDateRange(), getDateRangeSelection());
 
         // Verify Type filter selection
-        assertTrue(persistenceManager.getType() + " is not the default selection for Type.", ListUtils.conpareArrays(getTypeSelection(),
-                persistenceManager.getType()));
+        assertTrue(persistenceManager.getType() + " is not the default selection for Type.", ListUtils.conpareArrays(getTypeSelection(), persistenceManager.getType()));
 
         // TODO Add Product filter validation
 
@@ -420,23 +444,30 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         verifyCampaignFilterAndHeader();
 
         // Verify that selected Report is displayed in page Header
-        assertEquals(persistenceManager.getReport().getText() + " is not displayed in page Header.", persistenceManager.getReport().getText(),
-                getReportfromHeader());
+        assertEquals(persistenceManager.getReport().getText() + " is not displayed in page Header.", persistenceManager.getReport().getText(), getReportfromHeader());
 
         // Verify that selected Date Range is displayed in page Header
-        assertEquals(persistenceManager.getDateRange() + " is not displayed in page Header.", persistenceManager.getDateRange(),
-                getDateRangeFromHeader());
+        assertEquals(persistenceManager.getDateRange() + " is not displayed in page Header.", persistenceManager.getDateRange(), getDateRangeFromHeader());
 
     }
 
-    private void verifyCampaignFilterAndHeader() {
-        ArrayList<String> selectedCampaigns = getCampaignSelection();
-        assertTrue("The number of selected campaign is incorrect.", persistenceManager.getCampaigns().size() == selectedCampaigns.size());
+    protected boolean isElementDisplayed(WebElement element) {
+        if (element.getAttribute("style").contains("opacity: 1"))
+            return true;
+        return false;
+    }
 
-        if (persistenceManager.getCampaigns().size() > 6) {
+    private void verifyCampaignFilterAndHeader() {
+        ArrayList<String> selectedCampaigns = getCampaignFilterSelectedOptions();
+        final int expected = persistenceManager.getCampaigns().size();
+        final int actual = selectedCampaigns.size();
+
+        assertTrue("The number of selected campaign is incorrect.\n Expected " + persistenceManager.getCampaigns().toString() + " but found: " + selectedCampaigns.toString(), expected == actual);
+
+        if (getCampaignSelectionNumber() > 6) {
             assertEquals("'Multiple campaigns' is not displayed in header", "Multiple campaigns", getCampaignFromHeader());
         } else {
-            if (persistenceManager.getCampaigns().size() > 0) {
+            if (getCampaignSelectionNumber() > 0) {
                 for (String expectedCampaign : persistenceManager.getCampaigns()) {
                     boolean isCampaignFound = false;
                     for (String selectedCampaign : selectedCampaigns) {
@@ -451,5 +482,4 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             }
         }
     }
-
 }

@@ -17,6 +17,7 @@ import com.muso.enums.MenuType;
 import com.muso.enums.ReportType;
 import com.muso.enums.Table;
 import com.muso.enums.TypeType;
+import com.muso.exceptions.InvalidOptionException;
 import com.muso.models.User;
 import com.muso.pages.AntiPiracyLinksPage.AntiPiracyLinksPage;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPage;
@@ -80,6 +81,7 @@ public class DashboardTester {
         if (!infringementSummaryPage.isMenuExpanded(MenuType.CAMPAIGN)) {
             infringementSummaryPage.collapseAllMenus();
             infringementSummaryPage.clickOnCampaignMenuButton();
+
         }
     }
 
@@ -137,6 +139,7 @@ public class DashboardTester {
             marketAnalyticsPage = new MarketAnalyticsPage(driver);
             break;
         case Submit_Infringements:
+            submitInfringementsPage = new SubmitInfringementsPage(driver);
             break;
         default:
             break;
@@ -153,7 +156,6 @@ public class DashboardTester {
 
     public void searchForRegionAndSelect(String optionName) {
         marketAnalyticsPage.searchForRegionAndSelect(optionName);
-
     }
 
     public ArrayList<String> getRegionSelection() {
@@ -162,6 +164,10 @@ public class DashboardTester {
 
     public ArrayList<String> getPiracyCategorySelection() {
         return marketAnalyticsPage.getPiracyCategorySelection();
+    }
+
+    public void searchForCampaignAndSelect(String optionName) {
+        infringementSummaryPage.searchForCampaignAndSelect(optionName);
     }
 
     public void setCampaign(String campaign) {
@@ -193,7 +199,7 @@ public class DashboardTester {
     }
 
     public ArrayList<String> getCampaignSelection() {
-        return infringementSummaryPage.getCampaignSelection();
+        return infringementSummaryPage.getCampaignFilterSelectedOptions();
     }
 
     public String getDateRangeSelection() {
@@ -216,53 +222,19 @@ public class DashboardTester {
         return infringementSummaryPage.getPageTitle();
     }
 
-    public boolean isOptionSelected(String optionName) {
-
-        List<String> options;
-
-        MenuType menu = MenuType.getMenuFromOption(optionName);
-
-        switch (menu) {
-        case REPORT:
-            expandReportMenu();
-            options = Arrays.asList(infringementSummaryPage.getReportSelection());
-            break;
-        case DATE_RANGE:
-            expandDateRangeMenu();
-            options = Arrays.asList(infringementSummaryPage.getDateRangeSelection());
-            break;
-        case TYPE:
-            expandTypeMenu();
-            options = infringementSummaryPage.getTypeSelection();
-            break;
-        case PRODUCT:
-            expandProductMenu();
-            throw new InvalidArgumentException("NOT IMPLEMENTED");
-        case CAMPAIGN:
-            expandCampaignMenu();
-            options = infringementSummaryPage.getCampaignSelection();
-            break;
-        default:
-            throw new InvalidArgumentException("NOT IMPLEMENTED");
-        }
-
-        if (!options.contains(optionName)) {
-            LOGGER.warn("{} is not selected for {} filter. Current selection is: ", optionName, menu.getName(), options.toString());
-            return false;
-        }
-
-        return true;
+    public boolean isCounterDisplayed(String counterName) {
+        return infringementSummaryPage.isCounterDisplayed(counterName);
     }
 
-    public Double getInfringementsTotalRemovals() {
+    public int getInfringementsTotalRemovals() {
         return infringementSummaryPage.getTotalRemovals();
     }
 
-    public Double getInfringementsLastWeekRemovals() {
+    public int getInfringementsLastWeekRemovals() {
         return infringementSummaryPage.getLastWeekRemovals();
     }
 
-    public Double getInfringementsCustomRemovals() {
+    public int getInfringementsCustomRemovals() {
         return infringementSummaryPage.getCustomRemovals();
     }
 
@@ -304,7 +276,7 @@ public class DashboardTester {
             submitInfringementsPage.checkUIElements();
             break;
         default:
-            break;
+            throw new InvalidOptionException(reportName + " is not a valid option for Report menu");
         }
     }
 
@@ -313,7 +285,7 @@ public class DashboardTester {
 
     }
 
-    public HashMap<String, Double> getRemovalByStatusValue() {
+    public HashMap<String, Double> getRemovalsByStatus() {
         return infringementSummaryPage.gtRemovalsByStatus();
 
     }
@@ -330,7 +302,7 @@ public class DashboardTester {
     }
 
     public Double getRemovalByStatusValue(String status) {
-        HashMap<String, Double> removalsByTypeMap = getRemovalsByType();
+        HashMap<String, Double> removalsByTypeMap = getRemovalsByStatus();
 
         for (Map.Entry<String, Double> entry : removalsByTypeMap.entrySet()) {
             if (entry.getKey().equals(status)) {
@@ -356,6 +328,8 @@ public class DashboardTester {
 
             switch (getDateRangeSelection()) {
             case "All Time":
+                dateFilter = DateUtils.getMonthsInPast(600);
+                break;
             case "Last 12 Months":
                 dateFilter = DateUtils.getMonthsInPast(12);
                 break;
@@ -402,7 +376,7 @@ public class DashboardTester {
 
         switch (reportType) {
         case Infringement_Summary:
-            break;
+            return infringementSummaryPage.isDateRangeFilterApplied(filter);
         case Anti_Piracy_Links:
             return antiPiracyLinksPage.isDateRangeFilterApplied(filter);
         case Market_Analytics:
@@ -480,5 +454,62 @@ public class DashboardTester {
 
     public Long getProductInfringements(String productName, String period) {
         return infringementSummaryPage.getInfringementsByProductNameAndPeriod(productName, period);
+    }
+
+    public boolean isOptionSelected(String optionName) {
+
+        List<String> options;
+
+        MenuType menu = MenuType.getMenuFromOption(optionName);
+
+        switch (menu) {
+        case REPORT:
+            expandReportMenu();
+            options = Arrays.asList(infringementSummaryPage.getReportSelection());
+            break;
+        case DATE_RANGE:
+            expandDateRangeMenu();
+            options = Arrays.asList(infringementSummaryPage.getDateRangeSelection());
+            break;
+        case TYPE:
+            expandTypeMenu();
+            options = infringementSummaryPage.getTypeSelection();
+            break;
+        case PRODUCT:
+            expandProductMenu();
+            throw new InvalidArgumentException("NOT IMPLEMENTED");
+        case CAMPAIGN:
+            expandCampaignMenu();
+            options = infringementSummaryPage.getCampaignFilterSelectedOptions();
+            break;
+        default:
+            throw new InvalidArgumentException("NOT IMPLEMENTED");
+        }
+
+        if (!options.contains(optionName)) {
+            LOGGER.warn("{} is not selected for {} filter. Current selection is: ", optionName, menu.getName(), options.toString());
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean isCategoryElementsDisabled(String categoryName) {
+
+        MenuType menu = MenuType.getMenuFromOption(categoryName);
+
+        switch (menu) {
+        case TYPE:
+            expandTypeMenu();
+            return false;
+
+        case CAMPAIGN:
+            expandCampaignMenu();
+            return infringementSummaryPage.areCampaignsFromCategoryDisabled(categoryName);
+
+        default:
+            throw new InvalidArgumentException("NOT IMPLEMENTED");
+        }
+
     }
 }

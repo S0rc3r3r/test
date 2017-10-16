@@ -3,6 +3,7 @@ package step_definition;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.InvalidArgumentException;
@@ -66,8 +67,7 @@ public class DashBoard_StepDefinition {
         switch (MenuType.fromString(expandedMenu)) {
         case REPORT:
             availableOptions = dashboardTester.getReportOptions();
-            assertEquals(expandedMenu + " should have " + i + " available options but found: " + availableOptions.toString() + "\n", i,
-                    availableOptions.size());
+            assertEquals(expandedMenu + " should have " + i + " available options but found: " + availableOptions.toString() + "\n", i, availableOptions.size());
 
             for (String option : options) {
                 LOGGER.debug("Verifying that {} is a valid {} option", option, expandedMenu);
@@ -77,8 +77,7 @@ public class DashBoard_StepDefinition {
             break;
         case DATE_RANGE:
             availableOptions = dashboardTester.getDateRangeOptions();
-            assertEquals(expandedMenu + " should have " + i + " available options but found: " + availableOptions.toString() + "\n", i,
-                    availableOptions.size());
+            assertEquals(expandedMenu + " should have " + i + " available options but found: " + availableOptions.toString() + "\n", i, availableOptions.size());
 
             for (String option : options) {
                 LOGGER.debug("Verifying that {} is a valid {} option", option, expandedMenu);
@@ -99,33 +98,64 @@ public class DashBoard_StepDefinition {
 
     }
 
+    @Then("^All '(.+)' subcategories from '(Campaign|Type)' menu are disabled$")
+    public void all_subcategories_from_menu_are_disabled(ArrayList<String> categories, String menuName) {
+
+        switch (MenuType.fromString(menuName)) {
+        case CAMPAIGN:
+            for (String category : categories) {
+                assertTrue(category + " is not a selected option under Campaign filter.", dashboardTester.isOptionSelected(category));
+                assertTrue("All campaigns from the selected category should be disabled", dashboardTester.isCategoryElementsDisabled(category));
+
+            }
+
+            break;
+        case TYPE:
+
+        default:
+            throw new InvalidArgumentException(menuName + " is not implemented");
+        }
+    }
+
+    @When("^I search for '(.+)' '(Campaign|Product)'$")
+    public void i_search_for(String searchString, String menuName) {
+        switch (MenuType.fromString(menuName)) {
+        case CAMPAIGN:
+            dashboardTester.searchForCampaignAndSelect(searchString);
+            break;
+        case TYPE:
+
+        default:
+            throw new InvalidArgumentException(menuName + " is not implemented");
+        }
+
+    }
+
     @When("^I select '(.+)' option from '(Report|Date Range|Campaign|Product|Type)' menu$")
     public void i_select_option_from_menu(String optionName, String menuName) {
 
         switch (MenuType.fromString(menuName)) {
         case REPORT:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.REPORT
-                    .isOptionValid(optionName));
+            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.REPORT.isOptionValid(optionName));
             dashboardTester.setReport(optionName);
             break;
         case DATE_RANGE:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.DATE_RANGE
-                    .isOptionValid(optionName));
+            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.DATE_RANGE.isOptionValid(optionName));
             dashboardTester.setDateRange(optionName);
             break;
         case CAMPAIGN:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.CAMPAIGN
-                    .isOptionValid(optionName));
+            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.CAMPAIGN.isOptionValid(optionName));
             dashboardTester.setCampaign(optionName);
+            dashboardTester.isOptionSelected(optionName);
             break;
         case PRODUCT:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.PRODUCT
-                    .isOptionValid(optionName));
+            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.PRODUCT.isOptionValid(optionName));
             dashboardTester.setProduct(optionName);
+            break;
         case TYPE:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.TYPE.isOptionValid(
-                    optionName));
+            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.TYPE.isOptionValid(optionName));
             dashboardTester.setType(optionName);
+            break;
         default:
             throw new InvalidArgumentException(menuName + " is not implemented");
         }
@@ -134,17 +164,19 @@ public class DashBoard_StepDefinition {
     @When("^I count '(Total Removals|Last (?:12|6|2)?\\s?Months?|(?:Removals )?Last 4?\\s?Weeks?|Custom Range)' I get '(\\d+)'$")
     public void i_count_header_info_i_get(String optionName, int infringements) {
         int compareResult = -1;
-        double actualResult = -1.0;
+        int actualResult = -1;
 
         switch (optionName) {
         case "Total Removals":
-            compareResult = Double.compare(infringements, dashboardTester.getInfringementsTotalRemovals());
-            assertTrue(optionName + " value should be " + infringements, compareResult == 0);
+            actualResult = dashboardTester.getInfringementsTotalRemovals();
+            compareResult = Double.compare(infringements, actualResult);
+            assertTrue(optionName + " value should be " + infringements + " but was " + actualResult, compareResult == 0);
             break;
         case "Last Week":
         case "Removals Last Week":
-            compareResult = Double.compare(infringements, dashboardTester.getInfringementsLastWeekRemovals());
-            assertTrue(optionName + " value should be " + infringements, compareResult == 0);
+            actualResult = dashboardTester.getInfringementsLastWeekRemovals();
+            compareResult = Double.compare(infringements, actualResult);
+            assertTrue(optionName + " value should be " + infringements + " but was " + actualResult, compareResult == 0);
             break;
         case "Custom Range":
         case "Last 12 Months":
@@ -181,10 +213,9 @@ public class DashBoard_StepDefinition {
             assertTrue(optionName + " value should be " + infringements + "% but was " + actualResult + "%", compareResult == 0);
             break;
         case "Removals By Status":
-
             switch (optionName) {
             case "Complete":
-            case "In progress":
+            case "In Progress":
             case "Aborted":
                 actualResult = dashboardTester.getRemovalByStatusValue(optionName);
                 compareResult = Double.compare(infringements, actualResult);
@@ -193,12 +224,13 @@ public class DashBoard_StepDefinition {
                     assertTrue(optionName + " type has has no value or is not displayed in Removals By Status chart", false);
 
                 assertTrue(optionName + " value should be " + infringements + "% but was " + actualResult + "%", compareResult == 0);
+                break;
             default:
                 throw new InvalidArgumentException(optionName + " is not a valid Status for Removals By Status");
             }
-
+            break;
         default:
-            throw new InvalidArgumentException("Unknown optionTyoe name " + optionType);
+            throw new InvalidArgumentException("Unknown option Type name " + optionType);
 
         }
     }
@@ -209,8 +241,7 @@ public class DashBoard_StepDefinition {
         switch (optionType) {
         case "campaign":
             Long actualInfringements = dashboardTester.getCampaignInfringements(optionName, period);
-            assertTrue("There should be " + infringements + " infringements for campaign " + optionName + " using " + period + " filter. But was "
-                    + actualInfringements, infringements == actualInfringements);
+            assertTrue("There should be " + infringements + " infringements for campaign " + optionName + " using " + period + " filter. But was " + actualInfringements, infringements == actualInfringements);
             break;
         case "product":
             dashboardTester.getProductInfringements(optionName, period);
@@ -222,19 +253,15 @@ public class DashBoard_StepDefinition {
 
     }
 
-    @Then("^'(.+)' counter is not displayed$")
-    public void counter_is_not_displayed(String counterName) {
+    @Then("^'(.+)' counter is(| not) displayed$")
+    public void counter_is_not_displayed(String counterName, String isDisplayed) {
 
-        switch (counterName) {
-        case "Total Removals":
-
-            break;
-        case "Removals Last Week":
-
-            break;
-        default:
-
+        if (isDisplayed.isEmpty()) {
+            assertTrue(counterName + " is not displayed", dashboardTester.isCounterDisplayed(counterName));
+        } else {
+            assertTrue(counterName + " is displayed", !dashboardTester.isCounterDisplayed(counterName));
         }
+
     }
 
     @When("^I change the number of rows to be displayed for '(Campaigns|Removal Details)' table to (5|20|50|100)$")

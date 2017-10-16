@@ -8,13 +8,13 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.muso.enums.CategoryType;
 import com.muso.enums.RegionType;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPageBase;
-import com.muso.persistence.PersistenceManager;
 
 public class MarketAnalyticsPage extends InfringementSummaryPageBase {
 
@@ -39,6 +39,8 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
 
     public MarketAnalyticsPage(WebDriver driver) {
         super(driver);
+
+        PageFactory.initElements(driver, this);
 
     }
 
@@ -72,14 +74,14 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
         LOGGER.debug("Selecting {} from Region", optionName);
         WebElement regionElement = regiontOptionsHolder.findElement(By.cssSelector("li"));
         regionElement.click();
-        PersistenceManager.getInstance().setRegion(RegionType.fromString(optionName));
+        persistenceManager.setRegion(RegionType.fromString(optionName));
     }
 
     public void setPiracyCategory(String optionName) {
         LOGGER.debug("Selecting {} from Piracy Category", optionName);
         WebElement categoryElement = piracyCategoryOptionsHolder.findElement(By.cssSelector("li"));
         categoryElement.click();
-        PersistenceManager.getInstance().setCategory(CategoryType.fromString(optionName));
+        persistenceManager.setCategory(CategoryType.fromString(optionName));
     }
 
     @Override
@@ -126,12 +128,6 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
     }
 
     @Override
-    public ArrayList<String> getCampaignSelection() {
-        collapseAllMenus();
-        return super.getCampaignSelection();
-    }
-
-    @Override
     public String getDateRangeSelection() {
         collapseAllMenus();
         return super.getDateRangeSelection();
@@ -155,6 +151,7 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
         return super.getCampaignOptions();
     }
 
+    @Override
     public void checkUIElements() {
         throw new InvalidArgumentException("NOT IMPLEMENTED");
     }
