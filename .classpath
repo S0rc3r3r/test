@@ -82,6 +82,5 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/bogdantanasoiu/git/musoAutomation/libs/utils-0.0.1-SNAPSHOT.jar" sourcepath="/muso-utils"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

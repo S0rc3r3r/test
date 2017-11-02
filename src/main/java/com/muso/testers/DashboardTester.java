@@ -52,8 +52,137 @@ public class DashboardTester {
 
         infringementSummaryPage = new InfringementSummaryPage(driver);
 
-        rememberUserCampaign();
+        // rememberUserCampaign();
 
+    }
+
+    // CAMPAIGN FILTER METHODS
+    public void searchForCampaignAndSelect(String optionName) {
+        expandCampaignMenu();
+        infringementSummaryPage.searchForCampaignAndSelect(optionName);
+    }
+
+    public void searchForCampaign(String optionName) {
+        expandCampaignMenu();
+        infringementSummaryPage.searchForCampaign(optionName);
+    }
+
+    public void setCampaign(String action, String campaign) {
+
+        switch (action) {
+        case "remove":
+            infringementSummaryPage.collapseAllMenus();
+            infringementSummaryPage.removeCampaign(campaign);
+            break;
+        default:
+            expandCampaignMenu();
+            infringementSummaryPage.setCampaign(campaign);
+            break;
+        }
+
+    }
+
+    public boolean isCampaignOptionSelected(String optionName) {
+        return isOptionSelected(MenuType.CAMPAIGN, optionName);
+    }
+
+    public boolean isCampaignDisplayedInHeader(String optionName) {
+        return infringementSummaryPage.isCampaignDisplayedInHeader(optionName);
+    }
+
+    public void expandCampaignMenu() {
+
+        if (!infringementSummaryPage.isMenuExpanded(MenuType.CAMPAIGN)) {
+            infringementSummaryPage.collapseAllMenus();
+            infringementSummaryPage.clickOnCampaignMenuButton();
+
+        }
+    }
+
+    public boolean isCampaignCategoryElementsDisabled(String categoryName) {
+        return isCategoryElementsDisabled(MenuType.CAMPAIGN, categoryName);
+    }
+
+    public ArrayList<String> getCampaignOptions() {
+
+        ArrayList<String> campaignOptions = infringementSummaryPage.getCampaignOptions();
+        LOGGER.debug("Retrieved Campaign filter availabe options {}", campaignOptions.toString());
+
+        return campaignOptions;
+    }
+
+    public void clearCampaignSelection() {
+        expandCampaignMenu();
+        infringementSummaryPage.clearCampaignSelections();
+
+    }
+
+    // TYPE FILTER METHODS
+    public void searchForTypeAndSelect(String optionName) {
+        expandCampaignMenu();
+        infringementSummaryPage.searchForTypeAndSelect(optionName);
+    }
+
+    public void searchForType(String optionName) {
+        expandTypeMenu();
+        infringementSummaryPage.searchForType(optionName);
+    }
+
+    public void expandTypeMenu() {
+
+        if (!infringementSummaryPage.isMenuExpanded(MenuType.TYPE)) {
+            infringementSummaryPage.collapseAllMenus();
+            infringementSummaryPage.clickOnTypeMenuButton();
+        }
+    }
+
+    public void setType(String type) {
+        expandTypeMenu();
+        infringementSummaryPage.setType(type);
+    }
+
+    public ArrayList<String> getTypeOptions() {
+        ArrayList<String> typeOptions = infringementSummaryPage.getTypeOptions();
+        LOGGER.debug("Retrieved Type filter availabe options {}", typeOptions.toString());
+
+        return typeOptions;
+    }
+
+    public boolean isTypeOptionSelected(String optionName) {
+        return isOptionSelected(MenuType.TYPE, optionName);
+    }
+
+    public boolean isTypeCategoryElementsDisabled(String categoryName) {
+        return isCategoryElementsDisabled(MenuType.TYPE, categoryName);
+    }
+
+    public void clearTypeSelection() {
+        expandTypeMenu();
+        infringementSummaryPage.clearTypeSelections();
+    }
+
+    // PRODUCT FILTER METHODS
+    public ArrayList<String> getProductOptions() {
+
+        ArrayList<String> productOptions = infringementSummaryPage.getProductOptions();
+
+        LOGGER.debug("Retrieved Campaign filter availabe options {}", productOptions.toString());
+        return productOptions;
+    }
+
+    public void searchForProduct(String optionName) {
+        expandProductMenu();
+        infringementSummaryPage.searchForProduct(optionName);
+    }
+
+    public void clearProductSelection() {
+        expandProductMenu();
+        infringementSummaryPage.clearProductSelections();
+
+    }
+
+    public boolean isReportOptionSelected(String optionName) {
+        return isOptionSelected(MenuType.REPORT, optionName);
     }
 
     public void clickOnSupportButton() {
@@ -76,28 +205,11 @@ public class DashboardTester {
         }
     }
 
-    public void expandCampaignMenu() {
-
-        if (!infringementSummaryPage.isMenuExpanded(MenuType.CAMPAIGN)) {
-            infringementSummaryPage.collapseAllMenus();
-            infringementSummaryPage.clickOnCampaignMenuButton();
-
-        }
-    }
-
     public void expandDateRangeMenu() {
 
         if (!infringementSummaryPage.isMenuExpanded(MenuType.DATE_RANGE)) {
             infringementSummaryPage.collapseAllMenus();
             infringementSummaryPage.clickOnDateRangeMenuButton();
-        }
-    }
-
-    public void expandTypeMenu() {
-
-        if (!infringementSummaryPage.isMenuExpanded(MenuType.TYPE)) {
-            infringementSummaryPage.collapseAllMenus();
-            infringementSummaryPage.clickOnTypeMenuButton();
         }
     }
 
@@ -107,6 +219,7 @@ public class DashboardTester {
             infringementSummaryPage.collapseAllMenus();
             infringementSummaryPage.clickOnProductMenuButton();
         }
+
     }
 
     public void expandRegionMenu() {
@@ -166,28 +279,22 @@ public class DashboardTester {
         return marketAnalyticsPage.getPiracyCategorySelection();
     }
 
-    public void searchForCampaignAndSelect(String optionName) {
-        infringementSummaryPage.searchForCampaignAndSelect(optionName);
-    }
-
-    public void setCampaign(String campaign) {
-        expandCampaignMenu();
-        infringementSummaryPage.setCampaign(campaign);
-    }
-
     public void setDateRange(String dateRange) {
         expandDateRangeMenu();
         infringementSummaryPage.setDateRange(dateRange);
     }
 
-    public void setProduct(String product) {
-        expandProductMenu();
-        infringementSummaryPage.setProduct(product);
-    }
-
-    public void setType(String type) {
-        expandTypeMenu();
-        infringementSummaryPage.setType(type);
+    public void setProduct(String action, String product) {
+        switch (action) {
+        case "remove":
+            infringementSummaryPage.collapseAllMenus();
+            infringementSummaryPage.removeProduct(product);
+            break;
+        default:
+            expandProductMenu();
+            infringementSummaryPage.setProduct(product);
+            break;
+        }
     }
 
     public String getReportSelection() {
@@ -199,7 +306,16 @@ public class DashboardTester {
     }
 
     public ArrayList<String> getCampaignSelection() {
-        return infringementSummaryPage.getCampaignFilterSelectedOptions();
+        return infringementSummaryPage.getCampaignFilterSelectedOptionsFromFilter();
+    }
+
+    public int getNumberOfSelectedCampaigns() {
+        return infringementSummaryPage.getCampaignSelectionNumber();
+    }
+
+    public int getNumberOfSelectedProducts() {
+        expandProductMenu();
+        return infringementSummaryPage.getProductSelection().size();
     }
 
     public String getDateRangeSelection() {
@@ -456,52 +572,68 @@ public class DashboardTester {
         return infringementSummaryPage.getInfringementsByProductNameAndPeriod(productName, period);
     }
 
-    public boolean isOptionSelected(String optionName) {
+    public boolean isPorductOptionSelected(String optionName) {
+        return isOptionSelected(MenuType.PRODUCT, optionName);
+    }
 
-        List<String> options;
+    public boolean isDateRangeOptionSelected(String optionName) {
+        return isOptionSelected(MenuType.DATE_RANGE, optionName);
+    }
 
-        MenuType menu = MenuType.getMenuFromOption(optionName);
+    private boolean isOptionSelected(MenuType menu, String optionName) {
+
+        List<String> selectedOptions;
+        List<String> displayedOption = null;
 
         switch (menu) {
         case REPORT:
             expandReportMenu();
-            options = Arrays.asList(infringementSummaryPage.getReportSelection());
+            selectedOptions = Arrays.asList(infringementSummaryPage.getReportSelection());
             break;
         case DATE_RANGE:
             expandDateRangeMenu();
-            options = Arrays.asList(infringementSummaryPage.getDateRangeSelection());
+            selectedOptions = Arrays.asList(infringementSummaryPage.getDateRangeSelection());
             break;
         case TYPE:
             expandTypeMenu();
-            options = infringementSummaryPage.getTypeSelection();
+            selectedOptions = infringementSummaryPage.getTypeSelection();
+            displayedOption = infringementSummaryPage.getTypeFilterSelectedOptionsFromHolder();
             break;
         case PRODUCT:
             expandProductMenu();
-            throw new InvalidArgumentException("NOT IMPLEMENTED");
+            selectedOptions = infringementSummaryPage.getProductSelection();
+            displayedOption = infringementSummaryPage.getProductFilterSelectedOptionsFromHolder();
+            break;
         case CAMPAIGN:
             expandCampaignMenu();
-            options = infringementSummaryPage.getCampaignFilterSelectedOptions();
+            selectedOptions = infringementSummaryPage.getCampaignFilterSelectedOptionsFromFilter();
+            displayedOption = infringementSummaryPage.getCampaignFilterSelectedOptionsFromHolder();
             break;
         default:
             throw new InvalidArgumentException("NOT IMPLEMENTED");
         }
 
-        if (!options.contains(optionName)) {
-            LOGGER.warn("{} is not selected for {} filter. Current selection is: ", optionName, menu.getName(), options.toString());
+        if (!selectedOptions.containsAll(displayedOption)) {
+            LOGGER.error("Selected options: {} are not the same with displayed options: {} for {} menu", selectedOptions.toString(), displayedOption.toString(), menu.getName());
+            throw new RuntimeException("Elements selected in filter are not displayed in holder");
+        }
+        if (selectedOptions.contains(optionName) || displayedOption.contains(optionName)) {
+            LOGGER.debug("{} is selected under {} filter", optionName, menu.getName());
+            return true;
+        } else {
+            LOGGER.debug("{} is NOT selected under {} filter", optionName, menu.getName());
+            LOGGER.debug("Selected options in {} filter: {}\n Selected options in {} holder: {} ", menu.getName(), selectedOptions.toString(), menu.getName(), displayedOption.toString());
             return false;
         }
 
-        return true;
     }
 
-    public boolean isCategoryElementsDisabled(String categoryName) {
-
-        MenuType menu = MenuType.getMenuFromOption(categoryName);
+    private boolean isCategoryElementsDisabled(MenuType menu, String categoryName) {
 
         switch (menu) {
         case TYPE:
             expandTypeMenu();
-            return false;
+            return infringementSummaryPage.areTypesFromCategoryDisabled(categoryName);
 
         case CAMPAIGN:
             expandCampaignMenu();
@@ -512,4 +644,5 @@ public class DashboardTester {
         }
 
     }
+
 }

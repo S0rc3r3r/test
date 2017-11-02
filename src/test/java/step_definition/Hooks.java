@@ -36,7 +36,7 @@ public class Hooks {
     private static final String DEFAULT_OS_VERSION = "10";
     private static final String DEFAULT_JENKINS_BUILD = "Local";
     private static final String DEFAULT_CHROME_VERSION = "61";
-    private static final String DEFAULT_APPLICATION_URL = "http://st-dashboard.muso.com.s3-website-us-east-1.amazonaws.com";
+    private static final String DEFAULT_APPLICATION_URL = "http://localhost:4200";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
     private final boolean saveScreenshotLocally = true;
@@ -193,8 +193,7 @@ public class Hooks {
 
             if (Boolean.valueOf(useGrid)) {
                 LOGGER.info("Starting Chrome using GRID URL: https://{}:{}@hub-cloud.browserstack.com/wd/hub", username, authkey);
-                driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"),
-                        chromeCapabilities);
+                driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"), chromeCapabilities);
             } else {
                 LOGGER.info("Starting ChromeDriver using local install");
                 System.setProperty("webdriver.chrome.driver", "chromeDriver/chromedriver");
@@ -217,6 +216,7 @@ public class Hooks {
         }
 
         driver.manage().deleteAllCookies();
+        // driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         driver.manage().window().maximize();
 

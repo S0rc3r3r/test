@@ -13,7 +13,6 @@ import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
@@ -60,22 +59,22 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     protected WebElement productTable;
 
     // CAMPAIGN Table
-    @FindBy(css = "muso-campaigns div.row")
+    @FindBy(css = "muso-campaigns-data-table div.row")
     protected WebElement campaignTable;
 
-    @FindBy(css = "muso-campaigns thead")
+    @FindBy(css = "muso-campaigns-data-table thead")
     protected WebElement campaignTableHeader;
 
-    @FindBy(css = "muso-campaigns tbody")
+    @FindBy(css = "muso-campaigns-data-table tbody")
     protected WebElement campaignTableHolder;
 
-    @FindBy(css = "muso-campaigns span[class='pages']")
+    @FindBy(css = "muso-campaigns-data-table span[class='pages']")
     protected WebElement campaignTableDisplayPage;
 
-    @FindBy(css = "muso-campaigns button.btn.dropdown-toggle.pager")
+    @FindBy(css = "muso-campaigns-data-table button.btn.dropdown-toggle.pager")
     protected WebElement campaignTableshowNoOfRowsButton;
 
-    @FindBy(css = "muso-campaigns ul.dropdown-menu.inner")
+    @FindBy(css = "div#data-table-page-size-picker-container ul.dropdown-menu.inner")
     protected WebElement campaignTableshowNoOfRowsOptions;
 
     // REMOVALS BY STATUS / TYPE
@@ -157,11 +156,10 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
 
     public Integer getTablePageSize() {
 
+        campaignTableshowNoOfRowsButton.click();
+
         final String pageSizeDisplayedText = campaignTableshowNoOfRowsButton.getText();
         String selectedPageSizeText = "N/A";
-
-        Actions actions = new Actions(driver);
-        actions.moveToElement(campaignTableshowNoOfRowsButton).click().perform();
 
         for (WebElement pageSizeElement : campaignTableshowNoOfRowsOptions.findElements(By.cssSelector("li"))) {
             if (pageSizeElement.getAttribute("class").equals("selected")) {
@@ -272,9 +270,7 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
             // TODO Fix this
             assertTrue(Table.CAMPAIGNS.getTableName() + " table header are invalid or incomplete", isTableHeaderValid(Table.CAMPAIGNS));
 
-            // TODO remove the comment when MKV-289 is fixed
-            // assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 ==
-            // getTablePageSize());
+            assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
 
             // TODO remove this when MKV-302 is fixed
             // assertEquals(Table.CAMPAIGNS.getTableName() + " table should show result from page 1\n", "1",
@@ -422,7 +418,6 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
                 if (i == categoryElements.size() - 1) {
                     endIndex = campaignOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
                 } else {
-                    // ThreadHandler.sleep(500);
                     final WebElement nextCategory = categoryElements.get(i + 1).findElement(By.xpath(".."));
                     endIndex = Integer.valueOf(nextCategory.getAttribute("data-original-index"));
                 }
@@ -431,6 +426,38 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
         }
 
         List<WebElement> categoryItems = campaignOptionsHolder.findElements(By.cssSelector("li"));
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {
+                LOGGER.error("{} should be disabled when {} category is selected", categoryItems.get(i).getText(), categoryName);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean areTypesFromCategoryDisabled(String categoryName) {
+        List<WebElement> categoryElements = typeOptionsHolder.findElements(By.cssSelector("li a.dropdown-header"));
+
+        int startIndex = 0;
+        int endIndex = 0;
+
+        for (int i = 0; i < categoryElements.size(); i++) {
+            WebElement parentElement = categoryElements.get(i).findElement(By.xpath(".."));
+            if (parentElement.getText().equals(categoryName)) {
+                startIndex = Integer.valueOf(parentElement.getAttribute("data-original-index")) + 1;
+                if (i == categoryElements.size() - 1) {
+                    endIndex = campaignOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
+                } else {
+                    // ThreadHandler.sleep(500);
+                    final WebElement nextCategory = categoryElements.get(i + 1).findElement(By.xpath(".."));
+                    endIndex = Integer.valueOf(nextCategory.getAttribute("data-original-index"));
+                }
+                break;
+            }
+        }
+
+        List<WebElement> categoryItems = typeOptionsHolder.findElements(By.cssSelector("li"));
 
         for (int i = startIndex; i < endIndex; i++) {
             if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {

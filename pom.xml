@@ -43,8 +43,6 @@
 			<scope>test</scope>
 		</dependency>
 
-	
-
 
 		<dependency>
 			<groupId>info.cukes</groupId>
@@ -52,7 +50,12 @@
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		
+		<dependency>
+             <groupId>com.muso</groupId>
+             <artifactId>utils</artifactId>
+             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -69,7 +72,7 @@
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>3.4.0</version>
+			<version>3.6.0</version>
 		</dependency>
 
 

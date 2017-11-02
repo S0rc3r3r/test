@@ -1,6 +1,7 @@
 package step_definition;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.muso.enums.Table;
 import com.muso.enums.TypeType;
 import com.muso.testers.DashboardTester;
 
+import cucumber.api.Delimiter;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -91,10 +93,57 @@ public class DashBoard_StepDefinition {
 
     }
 
-    @And("^'(.+)' option is selected?$")
-    public void option_is_selected(String option) {
-        LOGGER.debug("Verifying selection state for option {}", option);
-        assertEquals(option + " is not selected.", true, dashboardTester.isOptionSelected(option));
+    @When("^No '(Campaign|Product|Type)' option is selected$")
+    public void no_option_is_selected(String menuName) {
+
+        switch (MenuType.fromString(menuName)) {
+        case CAMPAIGN:
+            dashboardTester.clearCampaignSelection();
+            break;
+        case TYPE:
+            dashboardTester.clearTypeSelection();
+            break;
+        case PRODUCT:
+            dashboardTester.clearProductSelection();
+            break;
+        default:
+            throw new InvalidArgumentException(menuName + " is not implemented");
+        }
+    }
+
+    @And("^'(.+)' option from '(Report|Date Range|Campaign|Product|Type)' menu is(| not) selected$")
+    public void option_is_selected(String optionName, String menuName, String optionSelected) {
+        LOGGER.debug("Verifying selection state for option {} under menu {}", optionName, menuName);
+
+        Boolean isOptionSelected = null;
+
+        switch (MenuType.fromString(menuName)) {
+        case CAMPAIGN:
+            isOptionSelected = dashboardTester.isCampaignOptionSelected(optionName);
+            break;
+        case TYPE:
+            isOptionSelected = dashboardTester.isTypeOptionSelected(optionName);
+            break;
+        case PRODUCT:
+            isOptionSelected = dashboardTester.isPorductOptionSelected(optionName);
+            break;
+        default:
+            throw new InvalidArgumentException(menuName + " is not implemented");
+        }
+
+        if (optionSelected.isEmpty()) {
+            assertTrue(optionName + " is not selected.", isOptionSelected);
+            if (MenuType.fromString(menuName) == MenuType.CAMPAIGN || MenuType.fromString(menuName) == MenuType.PRODUCT) {
+                if (dashboardTester.getNumberOfSelectedProducts() < 6)
+                    assertTrue(optionName + " is selected but not displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+            }
+        } else {
+            assertFalse(optionName + " is selected.", isOptionSelected);
+            if (MenuType.fromString(menuName) == MenuType.CAMPAIGN || MenuType.fromString(menuName) == MenuType.PRODUCT) {
+                if (dashboardTester.getNumberOfSelectedProducts() < 6)
+                    assertFalse(optionName + " is not selected but displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+            }
+        }
 
     }
 
@@ -104,61 +153,115 @@ public class DashBoard_StepDefinition {
         switch (MenuType.fromString(menuName)) {
         case CAMPAIGN:
             for (String category : categories) {
-                assertTrue(category + " is not a selected option under Campaign filter.", dashboardTester.isOptionSelected(category));
-                assertTrue("All campaigns from the selected category should be disabled", dashboardTester.isCategoryElementsDisabled(category));
-
+                assertTrue(category + " is not a selected option under Campaign filter.", dashboardTester.isCampaignOptionSelected(category));
+                assertTrue("All campaigns from the selected category should be disabled", dashboardTester.isCampaignCategoryElementsDisabled(category));
             }
 
             break;
         case TYPE:
-
+            for (String category : categories) {
+                assertTrue(category + " is not a selected option under Type filter.", dashboardTester.isTypeOptionSelected(category));
+                assertTrue("All types from the selected category should be disabled", dashboardTester.isTypeCategoryElementsDisabled(category));
+            }
+            break;
         default:
             throw new InvalidArgumentException(menuName + " is not implemented");
         }
     }
 
-    @When("^I search for '(.+)' '(Campaign|Product)'$")
+    @When("^I search for '(.+)' '(Campaign|Product|Type)'$")
     public void i_search_for(String searchString, String menuName) {
         switch (MenuType.fromString(menuName)) {
         case CAMPAIGN:
-            dashboardTester.searchForCampaignAndSelect(searchString);
+            dashboardTester.searchForCampaign(searchString);
             break;
         case TYPE:
-
+            dashboardTester.searchForType(searchString);
+            break;
+        case PRODUCT:
+            dashboardTester.searchForProduct(searchString);
+            break;
         default:
             throw new InvalidArgumentException(menuName + " is not implemented");
         }
 
     }
 
-    @When("^I select '(.+)' option from '(Report|Date Range|Campaign|Product|Type)' menu$")
-    public void i_select_option_from_menu(String optionName, String menuName) {
-
+    @When("^'(\\d+)' results? are displayed in '(Campaign|Product|Type)' filter$")
+    public void results_are_displayed(int results, String menuName) {
         switch (MenuType.fromString(menuName)) {
-        case REPORT:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.REPORT.isOptionValid(optionName));
-            dashboardTester.setReport(optionName);
-            break;
-        case DATE_RANGE:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.DATE_RANGE.isOptionValid(optionName));
-            dashboardTester.setDateRange(optionName);
-            break;
         case CAMPAIGN:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.CAMPAIGN.isOptionValid(optionName));
-            dashboardTester.setCampaign(optionName);
-            dashboardTester.isOptionSelected(optionName);
+            ArrayList<String> resultCampaigns = dashboardTester.getCampaignOptions();
+            assertEquals("Expected " + results + " results but found " + resultCampaigns.size(), results, resultCampaigns.size());
             break;
         case PRODUCT:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.PRODUCT.isOptionValid(optionName));
-            dashboardTester.setProduct(optionName);
+            ArrayList<String> resultProduct = dashboardTester.getProductOptions();
+            assertEquals("Expected " + results + " results but found " + resultProduct.size() + ": " + resultProduct.toString(), results, resultProduct.size());
             break;
         case TYPE:
-            assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.TYPE.isOptionValid(optionName));
-            dashboardTester.setType(optionName);
+            ArrayList<String> resultType = dashboardTester.getTypeOptions();
+            assertEquals("Expected " + results + " results but found " + resultType.size() + ": " + resultType.toString(), results, resultType.size());
             break;
         default:
             throw new InvalidArgumentException(menuName + " is not implemented");
         }
+
+    }
+
+    @When("^I (select|remove) '(.+)' option from '(Report|Date Range|Campaign|Product|Type)' menu$")
+    public void i_select_option_from_menu(String action, @Delimiter("; ") List<String> optionNames, String menuName) {
+
+        for (String optionName : optionNames) {
+            switch (MenuType.fromString(menuName)) {
+
+            case REPORT:
+                assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.REPORT.isOptionValid(optionName));
+                dashboardTester.setReport(optionName);
+                break;
+            case DATE_RANGE:
+                assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.DATE_RANGE.isOptionValid(optionName));
+                dashboardTester.setDateRange(optionName);
+                break;
+            case CAMPAIGN:
+
+                dashboardTester.setCampaign(action, optionName);
+
+                if (action.equals("select")) {
+                    assertTrue(optionName + " was not sleected.", dashboardTester.isCampaignOptionSelected(optionName));
+                    if (dashboardTester.getNumberOfSelectedCampaigns() < 6)
+                        assertTrue(optionName + "is selected but not displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+
+                } else {
+                    assertTrue(optionName + " was not removed.", !dashboardTester.isCampaignOptionSelected(optionName));
+                    if (dashboardTester.getNumberOfSelectedCampaigns() < 6)
+                        assertFalse(optionName + "is not selected but displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+                }
+
+                break;
+            case PRODUCT:
+                dashboardTester.setProduct(action, optionName);
+
+                if (action.equals("select")) {
+                    assertTrue(optionName + " was not sleected.", dashboardTester.isPorductOptionSelected(optionName));
+                    if (dashboardTester.getNumberOfSelectedProducts() < 6)
+                        assertTrue(optionName + "is selected but not displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+                } else {
+                    assertTrue(optionName + " was not removed.", !dashboardTester.isPorductOptionSelected(optionName));
+                    if (dashboardTester.getNumberOfSelectedProducts() < 6)
+                        assertFalse(optionName + "is not selected but displayed in header", dashboardTester.isCampaignDisplayedInHeader(optionName));
+                }
+
+                break;
+            case TYPE:
+                assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.TYPE.isOptionValid(optionName));
+                dashboardTester.setType(optionName);
+                dashboardTester.isTypeOptionSelected(optionName);
+                break;
+            default:
+                throw new InvalidArgumentException(menuName + " is not implemented");
+            }
+        }
+
     }
 
     @When("^I count '(Total Removals|Last (?:12|6|2)?\\s?Months?|(?:Removals )?Last 4?\\s?Weeks?|Custom Range)' I get '(\\d+)'$")

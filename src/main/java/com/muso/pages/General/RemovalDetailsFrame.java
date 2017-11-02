@@ -27,28 +27,28 @@ public class RemovalDetailsFrame {
     private WebDriver driver;
 
     // ANTI PIRACY LINKS
-    @FindBy(css = "muso-infringements p")
+    @FindBy(css = "muso-infringements-data-table p")
     protected WebElement antiPiracy_tableTitle;
 
-    @FindBy(css = "muso-infringements thead")
+    @FindBy(css = "muso-infringements-data-table thead")
     protected WebElement antiPiracy_tableHeader;
 
-    @FindBy(css = "muso-infringements tbody")
+    @FindBy(css = "muso-infringements-data-table tbody")
     protected WebElement antiPiracy_tableBody;
 
-    @FindBy(css = "muso-infringements button.btn.dropdown-toggle.pager")
+    @FindBy(css = "muso-infringements-data-table button.btn.dropdown-toggle.pager")
     protected WebElement antiPiracy_showNoOfRowsButton;
 
-    @FindBy(css = "muso-infringements ul.dropdown-menu.inner")
+    @FindBy(css = "div#data-table-page-size-picker-container ul.dropdown-menu.inner")
     protected WebElement antiPiracy_showNoOfRowsOptions;
 
-    @FindBy(css = "muso-infringements span.caret.caret-right")
+    @FindBy(css = "muso-infringements-data-table span.caret.caret-right")
     protected WebElement antiPiracy_nextPageButton;
 
-    @FindBy(css = "muso-infringements span.caret.caret-left")
+    @FindBy(css = "muso-infringements-data-table span.caret.caret-left")
     protected WebElement antiPiracy_previousPageButton;
 
-    @FindBy(css = "muso-infringements span[class='pages']")
+    @FindBy(css = "muso-infringements-data-table span[class='pages']")
     protected WebElement antiPiracy_currentPage;
 
     public RemovalDetailsFrame(WebDriver driver) {
@@ -207,9 +207,9 @@ public class RemovalDetailsFrame {
         assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table is not displayed on " + REPORT_NAME + " page.", getTableName().equals(
                 Table.REMOVAL_DETAILS.getTableName()));
         assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table headers are invalid or incomplete", isTableHeaderValid());
-        // TODO remove the comment when MKV-289 is fixed
-        // assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
-        assertEquals(Table.REMOVAL_DETAILS.getTableName() + " table should show result from page 1\n", "1", getTableDisplayPage());
+        assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
+        // assertEquals(Table.REMOVAL_DETAILS.getTableName() + " table should show result from page 1\n", "1",
+        // getTableDisplayPage());
     }
 
     private boolean isMenuExpanded(WebElement menuElement) {
