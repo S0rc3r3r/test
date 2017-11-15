@@ -111,6 +111,22 @@ public class RemovalDetailsFrame {
         return true;
     }
 
+    public boolean isMembersFilterApplied(String member) {
+        List<String> tableValues = new ArrayList<String>();
+
+        setRowsToDisplay(100);
+        int pages = getPages();
+
+        tableValues = getTableValues("Member");
+        for (String tableValue : tableValues) {
+            if (!member.contains(tableValue)) {
+                LOGGER.warn("{} member is displayed in Removal Details table but filter is {}", tableValue, member.toString());
+                return false;
+            }
+        }
+        return true;
+    }
+
     public ArrayList<String> getTableValues(String columnName) {
         final int columnIndex = Table.REMOVAL_DETAILS.getTableColumns().indexOf(columnName);
 
@@ -208,8 +224,7 @@ public class RemovalDetailsFrame {
                 Table.REMOVAL_DETAILS.getTableName()));
         assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table headers are invalid or incomplete", isTableHeaderValid());
         assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
-        // assertEquals(Table.REMOVAL_DETAILS.getTableName() + " table should show result from page 1\n", "1",
-        // getTableDisplayPage());
+        assertEquals(Table.REMOVAL_DETAILS.getTableName() + " table should show result from page 1\n", "1", getTableDisplayPage().trim());
     }
 
     private boolean isMenuExpanded(WebElement menuElement) {

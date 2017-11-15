@@ -151,7 +151,7 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     }
 
     public String getTableDisplayPage() {
-        return campaignTableDisplayPage.getText();
+        return campaignTableDisplayPage.getText().trim();
     }
 
     public Integer getTablePageSize() {
@@ -267,14 +267,12 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     private void check_campaign_table_info() {
         if (isCampaignTableDisplayed()) {
             assertEquals(Table.CAMPAIGNS.getTableName() + " table title should be displayed.", "Campaigns", getCampaignTableTitle());
-            // TODO Fix this
+
             assertTrue(Table.CAMPAIGNS.getTableName() + " table header are invalid or incomplete", isTableHeaderValid(Table.CAMPAIGNS));
 
             assertTrue(Table.REMOVAL_DETAILS.getTableName() + " table page size should be 5", 5 == getTablePageSize());
 
-            // TODO remove this when MKV-302 is fixed
-            // assertEquals(Table.CAMPAIGNS.getTableName() + " table should show result from page 1\n", "1",
-            // getTableDisplayPage());
+            assertEquals(Table.CAMPAIGNS.getTableName() + " table should show result from page 1\n", "1", getTableDisplayPage());
         } else {
             throw new ElementNotVisibleException("Campaigns table is not displayed");
         }
@@ -404,10 +402,16 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
         return removalDetailsFrame.isTypeFilterApplied(types);
     }
 
+    public boolean isMembersFilterApplied(String filter) {
+        removalDetailsFrame.isMembersFilterApplied(filter);
+        return false;
+    }
+
     public boolean areCampaignsFromCategoryDisabled(String categoryName) {
 
         List<WebElement> categoryElements = campaignOptionsHolder.findElements(By.cssSelector("li a.dropdown-header"));
 
+        boolean areElementsDisabled = false;
         int startIndex = 0;
         int endIndex = 0;
 
@@ -430,15 +434,18 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
         for (int i = startIndex; i < endIndex; i++) {
             if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {
                 LOGGER.error("{} should be disabled when {} category is selected", categoryItems.get(i).getText(), categoryName);
-                return false;
+                areElementsDisabled = false;
+                break;
             }
+            areElementsDisabled = true;
         }
-        return true;
+        return areElementsDisabled;
     }
 
     public boolean areTypesFromCategoryDisabled(String categoryName) {
         List<WebElement> categoryElements = typeOptionsHolder.findElements(By.cssSelector("li a.dropdown-header"));
 
+        boolean areElementsDisabled = false;
         int startIndex = 0;
         int endIndex = 0;
 
@@ -449,7 +456,6 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
                 if (i == categoryElements.size() - 1) {
                     endIndex = campaignOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
                 } else {
-                    // ThreadHandler.sleep(500);
                     final WebElement nextCategory = categoryElements.get(i + 1).findElement(By.xpath(".."));
                     endIndex = Integer.valueOf(nextCategory.getAttribute("data-original-index"));
                 }
@@ -462,10 +468,13 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
         for (int i = startIndex; i < endIndex; i++) {
             if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {
                 LOGGER.error("{} should be disabled when {} category is selected", categoryItems.get(i).getText(), categoryName);
-                return false;
+                areElementsDisabled = false;
+                break;
             }
+            areElementsDisabled = true;
         }
-        return true;
+
+        return areElementsDisabled;
     }
 
 }

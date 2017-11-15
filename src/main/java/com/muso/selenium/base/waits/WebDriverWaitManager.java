@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 public final class WebDriverWaitManager {
 
     private static final WebDriverWaitManager INSTANCE = new WebDriverWaitManager();
-    private static final int NUMBER_OF_TRIES = 5;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebDriverWaitManager.class);
 
@@ -25,8 +24,8 @@ public final class WebDriverWaitManager {
     private WebDriverWaitManager() {
         implicitWaitEnabled = false;
         implicitWait = 60;
-        explicitLongWait = 300;
-        explicitShortWait = 10;
+        explicitLongWait = 10;
+        explicitShortWait = 5;
     }
 
     public static WebDriverWaitManager getInstance() {
@@ -88,6 +87,21 @@ public final class WebDriverWaitManager {
         return element;
     }
 
+    public Boolean explicitWaitUntilTrue(final WebDriver driver, final ExpectedCondition<Boolean> condition, final long seconds) {
+
+        Boolean isCompleted = false;
+
+        try {
+            isCompleted = getExplicitWebDriverWait(driver, seconds)
+                    .until(condition);
+        } catch (TimeoutException exc) {
+
+            //throw exc;
+        }
+
+        return isCompleted;
+    }
+
     public WebElement explicitLongWaitUntil(final WebDriver driver,
         final ExpectedCondition<WebElement> condition) {
 
@@ -98,6 +112,11 @@ public final class WebDriverWaitManager {
         final ExpectedCondition<WebElement> condition) {
 
         return explicitWaitUntil(driver, condition, explicitShortWait);
+    }
+
+    public Boolean explicitShortWaitUntilTrue(WebDriver driver, ExpectedCondition<Boolean> condition) {
+        return explicitWaitUntilTrue(driver, condition, explicitShortWait);
+
     }
 
 }

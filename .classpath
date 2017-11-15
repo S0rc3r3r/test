@@ -26,26 +26,26 @@
 	<classpathentry kind="var" path="M2_REPO/junit/junit/4.12/junit-4.12.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/paulhammant/ngwebdriver/1.0/ngwebdriver-1.0.jar" sourcepath="/M2_REPO/com/paulhammant/ngwebdriver/1.0/ngwebdriver-1.0-sources.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-java/3.4.0/selenium-java-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-api/3.4.0/selenium-api-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-chrome-driver/3.4.0/selenium-chrome-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-remote-driver/3.4.0/selenium-remote-driver-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-java/3.6.0/selenium-java-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-api/3.6.0/selenium-api-3.6.0.jar" sourcepath="/M2_REPO/org/seleniumhq/selenium/selenium-api/3.6.0/selenium-api-3.6.0-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-chrome-driver/3.6.0/selenium-chrome-driver-3.6.0.jar" sourcepath="/M2_REPO/org/seleniumhq/selenium/selenium-chrome-driver/3.6.0/selenium-chrome-driver-3.6.0-sources.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0.jar" sourcepath="/M2_REPO/org/seleniumhq/selenium/selenium-remote-driver/3.6.0/selenium-remote-driver-3.6.0-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/cglib/cglib-nodep/3.2.4/cglib-nodep-3.2.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.8.0/gson-2.8.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/com/google/guava/guava/21.0/guava-21.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/com/google/guava/guava/23.0/guava-23.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.5.3/httpclient-4.5.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.4.6/httpcore-4.4.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/java/dev/jna/jna/4.1.0/jna-4.1.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/net/java/dev/jna/jna-platform/4.1.0/jna-platform-4.1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-edge-driver/3.4.0/selenium-edge-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-firefox-driver/3.4.0/selenium-firefox-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-ie-driver/3.4.0/selenium-ie-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-opera-driver/3.4.0/selenium-opera-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-safari-driver/3.4.0/selenium-safari-driver-3.4.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-support/3.4.0/selenium-support-3.4.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-edge-driver/3.6.0/selenium-edge-driver-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-firefox-driver/3.6.0/selenium-firefox-driver-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-ie-driver/3.6.0/selenium-ie-driver-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-opera-driver/3.6.0/selenium-opera-driver-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-safari-driver/3.6.0/selenium-safari-driver-3.6.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/seleniumhq/selenium/selenium-support/3.6.0/selenium-support-3.6.0.jar" sourcepath="/M2_REPO/org/seleniumhq/selenium/selenium-support/3.6.0/selenium-support-3.6.0-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/2.5/commons-io-2.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/w3c/css/sac/1.3/sac-1.3.jar"/>

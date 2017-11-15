@@ -12,6 +12,7 @@ public enum MenuType {
     DATE_RANGE("Date Range", OPTIONS.DATERAGENE_OPTIONS),
     CAMPAIGN("Campaign", OPTIONS.CAMPAIGN_OPTIONS),
     PRODUCT("Product", OPTIONS.PRODUCT_OPTIONS),
+    MEMBERS("Members", OPTIONS.MEMBERS_OPTIONS),
     TYPE("Type", OPTIONS.TYPE_OPTIONS),
     REGION("Region", OPTIONS.REGION_OPTIONS),
     CATEGORY("Piracy Category", OPTIONS.CATEGORY_OPTIONS),
@@ -93,6 +94,8 @@ public enum MenuType {
         private static final List<String> PRODUCT_OPTIONS = Arrays.asList("");
 
         private static final List<String> UNKNOWN_OPTIONS = Arrays.asList("");
+
+        private static final List<String> MEMBERS_OPTIONS = Arrays.asList("");
 
         private static final List<String> TYPE_OPTIONS = TypeType.getAvailableOptions();
 

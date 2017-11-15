@@ -2,9 +2,8 @@
 Feature: Infringement Summary Report features 
 
 Background: 
-    Given I'm located on new dashboard page as 'bogdan.tanasoiu' user 
-    
-    
+    Given I'm located on new dashboard page as '7249' user 
+      
 @InfringementSummaryUI 
 Scenario: [C23] Verify Infringement Summary UI Elements 
     Then 'Infringement Summary' report is displayed and has all elements displayed correctly 

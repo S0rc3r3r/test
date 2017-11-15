@@ -25,11 +25,13 @@ public class Clicker {
                     "arguments[0].scrollIntoView(true);arguments[0].click();",
                     new Object[] { element });
         } catch (WebDriverException e) {
-            if (e.getLocalizedMessage().contains("Element is not clickable at point")) {
-                LOGGER.debug("Element is not clickable at point exception encountered: ", e);
+            if (e.getLocalizedMessage().contains("is not clickable at point")) {
+                LOGGER.debug("Element is not clickable at point exception encountered: ");
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
                         new Object[] { element });
                 element.click();
+            } else {
+                LOGGER.warn(e.getLocalizedMessage());
             }
         }
     }

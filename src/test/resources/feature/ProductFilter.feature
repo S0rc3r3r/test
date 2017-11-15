@@ -2,13 +2,22 @@
 Feature: Product features 
 
 Background: 
-    Given I'm located on new dashboard page as 'bogdan.tanasoiu' user 
+    Given I'm located on new dashboard page as '7249' user 
     
-Scenario: [] Verify Product filter is disabled if no campaign is selected
-    When I select '30 Days; Aker Shot' option from 'Campaign' menu 
-    And I select '30 yawm; Aker Shot' option from 'Product' menu 
-    When No 'Campaign' option is selected
-
+Scenario: [] Verify Product filter is disabled if no campaign is selected 
+    Then 'Product' menu filter is disabled 
+    
+Scenario: [] Verify Product filter is enabled if at least one campaign is selected 
+    And 'Product' menu filter is disabled 
+    When I select '30 Days' option from 'Campaign' menu 
+    Then 'Product' menu filter is enabled 
+    
+Scenario: [] Verify Product filter is disabled when there is no campaign selected
+    And 'Product' menu filter is disabled 
+    And I select '30 Days' option from 'Campaign' menu 
+    And 'Product' menu filter is enabled 
+    When I remove '30 Days' option from 'Campaign' menu 
+    Then 'Product' menu filter is disabled 
     
 Scenario: [] Verify associated product is removed when campaign is removed 
     When I select '30 Days; Aker Shot' option from 'Campaign' menu 
@@ -31,6 +40,11 @@ Scenario: [] Verify Product filter search box without results
     When I select 'Films' option from 'Campaign' menu 
     And I search for 'xxxx' 'Product' 
     Then '0' results are displayed in 'Product' filter 
+    
+Scenario: [] Verify that Product options can be selected after search
+    Given I select 'Films' option from 'Campaign' menu 
+    When I search for 'in' 'Product' and select the results
+    Then 'Coming Forth by Day; Dad Behind The Tree; Nightingale\'s Nest' options from 'Product' menu are selected
     
     
     

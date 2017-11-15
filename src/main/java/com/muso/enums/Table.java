@@ -45,6 +45,11 @@ public enum Table {
         return columns;
     }
 
+    public void addTableColumnAtIndex(String columnName, int index) {
+        final ArrayList<String> columns = new ArrayList<String>(this.columns);
+
+    }
+
     public String getTableName() {
 
         return this.tableName;

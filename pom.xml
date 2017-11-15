@@ -50,12 +50,12 @@
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
-             <groupId>com.muso</groupId>
-             <artifactId>utils</artifactId>
-             <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+			<groupId>com.muso</groupId>
+			<artifactId>utils</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -75,7 +75,6 @@
 			<version>3.6.0</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -88,8 +87,17 @@
 			<version>1.7.25</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
+		</dependency>
+
+
 
 	</dependencies>
+
 
 	<build>
 		<plugins>
@@ -108,7 +116,7 @@
 						<configuration>
 							<filterFeaturesByTags>true</filterFeaturesByTags>
 							<glue>
-								<package>step_definition</package>
+								<package>com.muso.stepDefinition</package>
 							</glue>
 
 							<plugins>

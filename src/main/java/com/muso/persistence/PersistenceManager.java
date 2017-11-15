@@ -176,4 +176,9 @@ public class PersistenceManager {
 
     }
 
+    public void setMember(String optionName) {
+        // TODO Auto-generated method stub
+
+    }
+
 }
