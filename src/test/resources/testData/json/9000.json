@@ -1,0 +1,7 @@
+{
+    "description" : "Token for super_user 9000 with CORE_MANAGED and MARKET_ANALYTICS serviceTypes and childUserIds 9001,9002",
+    "username" : "bogdan.tanasoiu@muso.com",
+    "password":"CYVZ+0z0dXUIMBDpGkw41w==",
+    "jwt_token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjkwMDAsImNoaWxkVXNlcklkcyI6WzkwMDEsOTAwMl0sImNyZWF0ZWQiOjE1MTYzNzEyMTUyMjEsInNlcnZpY2VzIjpbeyJleHBpcnlEYXRlIjpudWxsLCJzZXJ2aWNlVHlwZSI6IkNPUkVfTUFOQUdFRCJ9LHsiZXhwaXJ5RGF0ZSI6bnVsbCwic2VydmljZVR5cGUiOiJNQVJLRVRfQU5BTFlUSUNTIn1dfQ.MFhb4tk60kcculJRoNAM-lnTGrIWTyqVNGlqhOoSjTG01JsTGY6yhzfN-liqokR9dwpUiuvU1uZIn8BFzSxYpg"
+}
+

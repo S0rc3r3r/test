@@ -1,6 +1,7 @@
 package com.muso.selenium.base.waits.conditions.types;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -33,7 +34,8 @@ public class ConditionalWaitUntilTypeVisibleInSelectionArea implements ExpectedC
 
         try {
             if (elem.getText().equals(name) && (elem.getAttribute("style").equals("display: block;") || elem.getAttribute("style").isEmpty()))
-                return true;
+                if (elem.findElement(By.cssSelector("span")).getAttribute("style").equals("opacity: 1;"))
+                    return true;
 
         } catch (StaleElementReferenceException e) {
             LOGGER.warn("SERE encountered in ConditionElementVisible");

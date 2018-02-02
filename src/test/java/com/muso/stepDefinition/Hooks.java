@@ -3,10 +3,21 @@ package com.muso.stepDefinition;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.junit.AssumptionViolatedException;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -32,26 +43,27 @@ import cucumber.api.java.Before;
 public class Hooks {
     // public static WebDriver driver;
     public static RemoteWebDriver driver;
-    private static final String DEFAULT_OS = "Windows";
-    private static final String DEFAULT_OS_VERSION = "10";
+    private static final String DEFAULT_OS = System.getProperty("os.name");
+    private static final String DEFAULT_OS_VERSION = System.getProperty("os.version");
     private static final String DEFAULT_JENKINS_BUILD = "Local";
-    private static final String DEFAULT_CHROME_VERSION = "61";
     private static final String DEFAULT_APPLICATION_URL = "http://localhost:4200";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
+    private static final String DEFAULT_BROWSERSTACK_USE_REAL_DEVICE = "true";
     private final boolean saveScreenshotLocally = true;
 
-    private DesiredCapabilities chromeCapabilities;
+    private DesiredCapabilities desiredCapabilities;
+    private ChromeOptions options;
 
-    String username = System.getenv("BROWSERSTACK_USER");
-    String authkey = System.getenv("BROWSERSTACK_ACCESSKEY");
-    String os = System.getenv("BROWSERSTACK_OS");
-    String os_version = System.getenv("BROWSERSTACK_OS_VERSION");
-    String buildNo = System.getenv("JENKINS_BUILDNO");
-    String browser = System.getenv("BROWSERSTACK_BROWSER");
-    String browser_version = System.getenv("BROWSERSTACK_BROWSER_VERSION");
-    String useGrid = System.getenv("USE_GRID");
-    String application_url = System.getenv("APPLICATION_URL");
+    private String username = System.getProperty("BROWSERSTACK_USER");
+    private String authkey = System.getProperty("BROWSERSTACK_ACCESSKEY");
+    private String os = System.getProperty("BROWSERSTACK_OS");
+    private String os_version = System.getProperty("BROWSERSTACK_OS_VERSION");
+    private String buildNo = System.getProperty("JENKINS_BUILDNO");
+    private String browser = System.getProperty("BROWSERSTACK_BROWSER");
+    private String useGrid = System.getProperty("USE_GRID");
+    private String application_url = System.getProperty("APPLICATION_URL");
+    private String use_real_device = System.getProperty("BROWSERSTACK_USE_REAL_DEVICE");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Hooks.class);
 
@@ -60,15 +72,25 @@ public class Hooks {
 
         LOGGER.info("Starting Sccenario: {}", scenario.getName());
         initVars();
-        initBrowser(scenario);
+        initCapabilities(scenario);
         startBrowser();
+    }
+
+    @Before("@Mobile")
+    public void skip_scenario(Scenario scenario) {
+        if (os.contains("OS X") || os.contains("Windows")) {
+
+        } else {
+            LOGGER.warn("SKIP SCENARIO: " + scenario.getName());
+            throw new AssumptionViolatedException("Scenario not supported on MOBILE devices.");
+        }
     }
 
     private void initVars() {
         LOGGER.info("Starting variables initialization");
 
         if (useGrid == null) {
-            useGrid = System.getProperty("USE_GRID");
+            useGrid = System.getenv("USE_GRID");
             if (useGrid == null) {
                 useGrid = "false";
                 LOGGER.info("USE_GRID variable not provided or null. Using default value <false>");
@@ -76,29 +98,32 @@ public class Hooks {
         }
 
         if (browser == null) {
-            browser = System.getProperty("BROWSER");
+            browser = System.getenv("BROWSERSTACK_BROWSER");
             if (browser == null) {
                 browser = "Chrome";
                 LOGGER.info("BROWSERSTACK_BROWSER variable not provided or null. Using default value <chrome>");
             }
         }
 
-        if (browser_version == null) {
-            browser_version = System.getProperty("BROWSERSTACK_BROWSER_VERSION");
-            if (browser_version == null) {
-                switch (browser) {
-                case "Chrome":
-                    browser_version = DEFAULT_CHROME_VERSION;
-                    LOGGER.info("BROWSERSTACK_BROWSER_VERSION variable not provided or null. Using default value " + DEFAULT_CHROME_VERSION);
-                    break;
-                default:
-                    throw new InvalidArgumentException("Please add default browser version for browser " + browser);
-                }
+        if (os == null) {
+            os = System.getenv("BROWSERSTACK_OS");
+            if (os == null) {
+                os = DEFAULT_OS;
+                LOGGER.info("BROWSERSTACK_OS variable not provided or null.Using default value <{}>", DEFAULT_OS);
+
+            }
+        }
+
+        if (os_version == null) {
+            os_version = System.getenv("BROWSERSTACK_OS_VERSION");
+            if (os_version == null) {
+                os_version = DEFAULT_OS_VERSION;
+                LOGGER.info("BROWSERSTACK_OS_VERSION variable not provided or null.Using default value <{}>", DEFAULT_OS_VERSION);
             }
         }
 
         if (application_url == null) {
-            application_url = System.getProperty("APPLICATION_URL");
+            application_url = System.getenv("APPLICATION_URL");
             if (application_url == null) {
                 application_url = DEFAULT_APPLICATION_URL;
                 LOGGER.info("APPLICATION_URL variable not provided or null. Using default value <{}>", DEFAULT_APPLICATION_URL);
@@ -127,23 +152,6 @@ public class Hooks {
                 }
             }
 
-            if (os == null) {
-                os = System.getenv("BROWSERSTACK_OS");
-                if (os == null) {
-                    os = DEFAULT_OS;
-                    LOGGER.info("BROWSERSTACK_OS variable not provided or null.Using default value <{}>", DEFAULT_OS);
-
-                }
-            }
-
-            if (os_version == null) {
-                os_version = System.getenv("BROWSERSTACK_OS_VERSION");
-                if (os_version == null) {
-                    os_version = DEFAULT_OS_VERSION;
-                    LOGGER.info("BROWSERSTACK_OS_VERSION variable not provided or null.Using default value <{}>", DEFAULT_OS_VERSION);
-                }
-            }
-
             if (buildNo == null) {
                 buildNo = System.getenv("JENKINS_BUILDNO");
                 if (buildNo == null) {
@@ -151,75 +159,117 @@ public class Hooks {
                     LOGGER.info("JENKINS_BUILDNO variable not provided or null.Using random value <{}>", DEFAULT_JENKINS_BUILD);
                 }
             }
+
+            if (use_real_device == null) {
+                use_real_device = System.getenv("BROWSERSTACK_USE_REAL_DEVICE");
+                if (use_real_device == null) {
+                    use_real_device = DEFAULT_BROWSERSTACK_USE_REAL_DEVICE;
+                    LOGGER.info("BROWSERSTACK_USE_REAL_DEVICE variable not provided or null. Using default value <true>");
+                }
+            }
+
         }
     }
 
-    private void initBrowser(Scenario scenario) throws MalformedURLException {
+    private void initCapabilities(Scenario scenario) throws MalformedURLException {
         LOGGER.info("Init {} browser capabilities", browser);
+
+        options = new ChromeOptions();
+
+        desiredCapabilities = new DesiredCapabilities();
+        desiredCapabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
+
+        desiredCapabilities.setCapability("build", buildNo + " - " + scenario.getName());
+        desiredCapabilities.setCapability("browserstack.debug", "true");
+        desiredCapabilities.setCapability("project", "Muso Dashboard");
+
+        if (os.equalsIgnoreCase("Android") || os.equalsIgnoreCase("IOS") || os.equalsIgnoreCase("Windows Phone")) {
+            desiredCapabilities.setCapability("device", os_version);
+            desiredCapabilities.setCapability("realMobile", use_real_device);
+            desiredCapabilities.setCapability("real_mobile", use_real_device);
+        } else {
+            desiredCapabilities.setCapability("os", os.replaceAll("MAC ", ""));
+            desiredCapabilities.setCapability("os_version", os_version);
+            desiredCapabilities.setCapability("browser", browser);
+        }
 
         switch (browser) {
         case "Chrome":
-            chromeCapabilities = new DesiredCapabilities();
-            chromeCapabilities.setCapability(CapabilityType.UNEXPECTED_ALERT_BEHAVIOUR, UnexpectedAlertBehaviour.IGNORE);
-
-            ChromeOptions options = new ChromeOptions();
             options.addArguments("disable-infobars");
             options.addArguments("--start-maximized");
-            chromeCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
-
-            chromeCapabilities.setCapability("build", buildNo + " - " + scenario.getName());
-            chromeCapabilities.setCapability("os", os);
-            chromeCapabilities.setCapability("os_version", os_version);
-            chromeCapabilities.setCapability("browser", browser);
-            chromeCapabilities.setCapability("version", browser_version);
-            chromeCapabilities.setCapability("browserstack.debug", "true");
             break;
         case "Firefox":
+            break;
 
         case "IE":
-
+            break;
         case "Safari":
-
+            break;
         default:
             throw new InvalidArgumentException(browser + " is not configured in HOOKS.Please configure");
 
         }
 
+        desiredCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
     }
 
     private void startBrowser() throws MalformedURLException {
-        switch (browser) {
-        case "Chrome":
 
-            if (Boolean.valueOf(useGrid)) {
-                LOGGER.info("Starting Chrome using GRID URL: https://{}:{}@hub-cloud.browserstack.com/wd/hub", username, authkey);
-                driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"), chromeCapabilities);
-            } else {
+        if (Boolean.valueOf(useGrid)) {
+            LOGGER.info("Starting Browser using GRID URL: https://{}:{}@hub-cloud.browserstack.com/wd/hub", username, authkey);
+            driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + "@hub-cloud.browserstack.com/wd/hub"), desiredCapabilities);
+        } else {
+            switch (browser) {
+            case "Chrome":
                 LOGGER.info("Starting ChromeDriver using local install");
-                System.setProperty("webdriver.chrome.driver", "chromeDriver/chromedriver");
+                System.setProperty("webdriver.chrome.driver", "Drivers/chromedriver");
 
+                if (os.equalsIgnoreCase("Android") || os.equalsIgnoreCase("IOS") || os.equalsIgnoreCase("Windows Phone")) {
+                    Map<String, String> mobileEmulation = new HashMap<>();
+                    mobileEmulation.put("   ", os_version);
+
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    chromeOptions.setExperimentalOption("mobileEmulation", mobileEmulation);
+
+                    driver = new ChromeDriver(chromeOptions);
+                } else {
+                    driver = new ChromeDriver(options);
+                }
+                break;
+            case "Firefox":
+                LOGGER.info("Starting GeckoDriver using local install");
+                System.setProperty("webdriver.gecko.driver", "Drivers/geckodriver");
+                driver = new FirefoxDriver();
+                break;
+            case "IE":
+                driver = new InternetExplorerDriver();
+                break;
+            case "Safari":
+                driver = new SafariDriver();
+                break;
+            default:
                 driver = new ChromeDriver();
+                break;
             }
-
-            break;
-        case "Firefox":
-            driver = new FirefoxDriver();
-            break;
-        case "IE":
-            driver = new InternetExplorerDriver();
-            break;
-        case "Safari":
-            driver = new SafariDriver();
-            break;
-        default:
-            driver = new ChromeDriver();
-            break;
         }
 
+        LOGGER.info("---------------------------------");
+        LOGGER.info("OS: {}", os);
+        if (os.equalsIgnoreCase("Android") || os.equalsIgnoreCase("IOS") || os.equalsIgnoreCase("Windows Phone")) {
+            LOGGER.info("DEVICE: {}", os_version);
+            LOGGER.info("IS REAL DEVICE: {}", use_real_device);
+
+        } else {
+            LOGGER.info("OS_VERSION: {}", os_version);
+            driver.manage().window().maximize();
+            driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+
+        }
+        LOGGER.info("BROWSER: {}", browser);
+        LOGGER.info("---------------------------------");
+
         driver.manage().deleteAllCookies();
-        // driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
-        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
-        driver.manage().window().maximize();
 
     }
 
@@ -245,8 +295,39 @@ public class Hooks {
                 System.out.println(ex.getMessage());
             }
         }
+
+        if (Boolean.valueOf(useGrid)) {
+            updateBrowserStackStatus(scenario.isFailed());
+        }
+
         PersistenceManager.getInstance().clear();
         driver.quit();
+    }
+
+    public void updateBrowserStackStatus(Boolean isFailed) {
+
+        String browserstackUrl = "https://" + username + ":" + authkey;
+
+        try {
+            URI uri = new URI(browserstackUrl + "@www.browserstack.com/automate/sessions/" +
+                    driver.getSessionId().toString() + ".json");
+            HttpPut putRequest = new HttpPut(uri);
+
+            ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+            if (!isFailed) {
+                nameValuePairs.add((new BasicNameValuePair("status", "completed")));
+                LOGGER.debug("Marked Browserstack session status: completed.");
+            } else {
+                nameValuePairs.add((new BasicNameValuePair("status", "error")));
+                nameValuePairs.add((new BasicNameValuePair("reason", "failure ")));
+
+                LOGGER.error("Marked Browserstack session status: error!");
+            }
+            putRequest.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            HttpClientBuilder.create().build().execute(putRequest);
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.error("Error marking test result as Browserstack session status!", e);
+        }
     }
 
 }

@@ -9,14 +9,14 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.muso.selenium.base.waits.conditions.products.ConditionWaitUntilProductSelected;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionWaitUntilMemberSelected implements ExpectedCondition<Boolean> {
+public class ConditionWaitUntilMemberSelected extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-filter-user ul.dropdown-menu.inner li";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilProductSelected.class);
 
     public ConditionWaitUntilMemberSelected(String name) {
@@ -30,7 +30,7 @@ public class ConditionWaitUntilMemberSelected implements ExpectedCondition<Boole
 
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
-        WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+        WebElement elem = driver.findElement(factory.cssContainingText(memberHolderItems_CSS, name));
 
         try {
             if (elem.isDisplayed() && elem.getAttribute("class").equals("selected"))

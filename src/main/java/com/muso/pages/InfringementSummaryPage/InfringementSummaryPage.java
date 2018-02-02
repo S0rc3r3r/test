@@ -27,6 +27,7 @@ import com.muso.exceptions.MissingCampaignException;
 import com.muso.exceptions.MissingProductException;
 import com.muso.pages.AntiPiracyLinksPage.AntiPiracyLinksPage;
 import com.muso.pages.General.RemovalDetailsFrame;
+import com.muso.selenium.base.utils.Clicker;
 import com.muso.utils.regexTools.RegExpTools;
 
 public class InfringementSummaryPage extends InfringementSummaryPageBase {
@@ -39,49 +40,49 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     private WebElement lastWeekRemovalText;
     private WebElement customRemovalPeriodText;
 
-    @FindBy(id = "counterAllTime")
+    @FindBy(id = totalRemovals_CSS)
     protected WebElement totalRemovals;
 
-    @FindBy(id = "counterLastWeek")
+    @FindBy(id = lastWeekRemoval_CSS)
     protected WebElement lastWeekRemoval;
 
-    @FindBy(id = "counterCustomPeriod")
+    @FindBy(id = customRemoval_CSS)
     protected WebElement customRemoval;
 
-    @FindBy(css = "muso-line-chart-per-day p")
+    @FindBy(css = removalsPerDayTitle_CSS)
     protected WebElement removalsPerDayTitle;
 
-    @FindBy(id = "chart_divEvolution")
+    @FindBy(id = removalsPerDayChart_CSS)
     protected WebElement removalsPerDayChart;
 
     // PRODUCT TABLE
-    @FindBy(css = "muso-products .row.top-module-space")
+    @FindBy(css = productTable_CSS)
     protected WebElement productTable;
 
     // CAMPAIGN Table
-    @FindBy(css = "muso-campaigns-data-table div.row")
+    @FindBy(css = campaignTable_CSS)
     protected WebElement campaignTable;
 
-    @FindBy(css = "muso-campaigns-data-table thead")
+    @FindBy(css = campaignTableHeader_CSS)
     protected WebElement campaignTableHeader;
 
-    @FindBy(css = "muso-campaigns-data-table tbody")
-    protected WebElement campaignTableHolder;
+    @FindBy(css = campaignTableBody_CSS)
+    protected WebElement campaignTableBody;
 
-    @FindBy(css = "muso-campaigns-data-table span[class='pages']")
+    @FindBy(css = campaignTableDisplayPage_CSS)
     protected WebElement campaignTableDisplayPage;
 
-    @FindBy(css = "muso-campaigns-data-table button.btn.dropdown-toggle.pager")
+    @FindBy(css = campaignTableshowNoOfRowsButton_CSS)
     protected WebElement campaignTableshowNoOfRowsButton;
 
-    @FindBy(css = "div#data-table-page-size-picker-container ul.dropdown-menu.inner")
+    @FindBy(css = campaignTableshowNoOfRowsOptions_CSS)
     protected WebElement campaignTableshowNoOfRowsOptions;
 
     // REMOVALS BY STATUS / TYPE
-    @FindBy(css = "muso-infringements-by-high-level-type-chart muso-pie-chart-legend svg > g > g")
+    @FindBy(css = removalsByTypeHolder_CSS)
     protected List<WebElement> removalsByTypeHolder;
 
-    @FindBy(css = "muso-removals-by-status-and-high-level-type muso-infringements-per-status-chart svg > g > g")
+    @FindBy(css = removalsByStatusHolder_CSS)
     protected List<WebElement> removalsByStatusHolder;
 
     public InfringementSummaryPage(WebDriver driver) {
@@ -89,23 +90,22 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
 
         PageFactory.initElements(driver, this);
 
-        totalRemovalsText = totalRemovals.findElement(By.xpath(".."));
-        lastWeekRemovalText = lastWeekRemoval.findElement(By.xpath(".."));
-        customRemovalPeriodText = customRemoval.findElement(By.xpath(".."));
-
         removalDetailsFrame = new RemovalDetailsFrame(driver);
     }
 
     // HEADER ACTIONS
     public int getTotalRemovals() {
+        totalRemovalsText = totalRemovals.findElement(By.xpath(".."));
         return Integer.valueOf(totalRemovals.getText().replaceAll(",", ""));
     }
 
     public int getLastWeekRemovals() {
+        lastWeekRemovalText = lastWeekRemoval.findElement(By.xpath(".."));
         return Integer.valueOf(lastWeekRemoval.getText().replaceAll(",", ""));
     }
 
     public int getCustomRemovals() {
+        customRemovalPeriodText = customRemoval.findElement(By.xpath(".."));
         return Integer.valueOf(customRemoval.getText().replaceAll(",", ""));
     }
 
@@ -130,6 +130,34 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     }
 
     // CAMPAIGN TABLE ACTIONS
+
+    public void clickOnCampaignFromTable(String campaignName) {
+
+        boolean campaignFound = false;
+
+        if (!isCampaignTableDisplayed()) {
+            LOGGER.warn("Campaign table is not displayed");
+            throw new MissingCampaignException("Campaign table is not displayed");
+        }
+
+        final int campaignColumnIndex = Table.CAMPAIGNS.getTableColumns().indexOf("Campaign");
+
+        List<WebElement> tableRows = campaignTableBody.findElements(By.cssSelector("tr"));
+
+        for (WebElement row : tableRows) {
+            String campaign = row.findElement(By.cssSelector("td:nth-child(" + (campaignColumnIndex + 1) + ")")).getText();
+            if (campaign.equals(campaignName)) {
+                Clicker.safeClick(driver, row);
+                campaignFound = true;
+                break;
+            }
+        }
+
+        if (!campaignFound)
+            throw new MissingCampaignException("Campaign '" + campaignName + "' could not be found in Campaign table");
+
+    }
+
     public String getCampaignTableTitle() {
         return campaignTable.findElement(By.cssSelector("p")).getText();
     }
@@ -327,7 +355,7 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
             throw new InvalidCampaignTableColumnException(period + " column is not displayed in Campaign table");
         }
 
-        List<WebElement> tableRows = campaignTableHolder.findElements(By.cssSelector("tr"));
+        List<WebElement> tableRows = campaignTableBody.findElements(By.cssSelector("tr"));
 
         for (WebElement row : tableRows) {
             String campaign = row.findElement(By.cssSelector("td:nth-child(" + (campaignColumnIndex + 1) + ")")).getText();
@@ -409,31 +437,33 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
 
     public boolean areCampaignsFromCategoryDisabled(String categoryName) {
 
-        List<WebElement> categoryElements = campaignOptionsHolder.findElements(By.cssSelector("li a.dropdown-header"));
+        List<WebElement> categoryElements = campaignOptionsHolder.findElements(By.cssSelector("li"));
 
         boolean areElementsDisabled = false;
         int startIndex = 0;
         int endIndex = 0;
 
         for (int i = 0; i < categoryElements.size(); i++) {
-            WebElement parentElement = categoryElements.get(i).findElement(By.xpath(".."));
-            if (parentElement.getText().equals(categoryName)) {
-                startIndex = Integer.valueOf(parentElement.getAttribute("data-original-index")) + 1;
+            if (categoryElements.get(i).getText().equals(categoryName)) {
+                startIndex = Integer.valueOf(categoryElements.get(i).getAttribute("data-original-index")) + 1;
                 if (i == categoryElements.size() - 1) {
                     endIndex = campaignOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
                 } else {
-                    final WebElement nextCategory = categoryElements.get(i + 1).findElement(By.xpath(".."));
-                    endIndex = Integer.valueOf(nextCategory.getAttribute("data-original-index"));
+                    for (int x = i + 1; x < categoryElements.size(); x++) {
+                        List<WebElement> nextCategory = categoryElements.get(x).findElements(By.cssSelector("a[class^='nested-option']"));
+                        if (nextCategory.isEmpty()) {
+                            endIndex = x;
+                            break;
+                        }
+                    }
                 }
                 break;
             }
         }
 
-        List<WebElement> categoryItems = campaignOptionsHolder.findElements(By.cssSelector("li"));
-
         for (int i = startIndex; i < endIndex; i++) {
-            if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {
-                LOGGER.error("{} should be disabled when {} category is selected", categoryItems.get(i).getText(), categoryName);
+            if (!categoryElements.get(i).getAttribute("class").equals("disabled")) {
+                LOGGER.error("{} should be disabled when {} category is selected", categoryElements.get(i).getText(), categoryName);
                 areElementsDisabled = false;
                 break;
             }
@@ -443,31 +473,34 @@ public class InfringementSummaryPage extends InfringementSummaryPageBase {
     }
 
     public boolean areTypesFromCategoryDisabled(String categoryName) {
-        List<WebElement> categoryElements = typeOptionsHolder.findElements(By.cssSelector("li a.dropdown-header"));
+        List<WebElement> categoryElements = typeOptionsHolder.findElements(By.cssSelector("li"));
 
         boolean areElementsDisabled = false;
         int startIndex = 0;
         int endIndex = 0;
 
         for (int i = 0; i < categoryElements.size(); i++) {
-            WebElement parentElement = categoryElements.get(i).findElement(By.xpath(".."));
-            if (parentElement.getText().equals(categoryName)) {
-                startIndex = Integer.valueOf(parentElement.getAttribute("data-original-index")) + 1;
+            LOGGER.warn(categoryElements.get(i).getText());
+            if (categoryElements.get(i).getText().equals(categoryName)) {
+                startIndex = Integer.valueOf(categoryElements.get(i).getAttribute("data-original-index")) + 1;
                 if (i == categoryElements.size() - 1) {
-                    endIndex = campaignOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
+                    endIndex = typeOptionsHolder.findElements(By.cssSelector("li")).size() - 1;
                 } else {
-                    final WebElement nextCategory = categoryElements.get(i + 1).findElement(By.xpath(".."));
-                    endIndex = Integer.valueOf(nextCategory.getAttribute("data-original-index"));
+                    for (int x = i + 1; x < categoryElements.size(); x++) {
+                        List<WebElement> nextCategory = categoryElements.get(x).findElements(By.cssSelector("a[class^='nested-option']"));
+                        if (nextCategory.isEmpty()) {
+                            endIndex = x;
+                            break;
+                        }
+                    }
                 }
                 break;
             }
         }
 
-        List<WebElement> categoryItems = typeOptionsHolder.findElements(By.cssSelector("li"));
-
         for (int i = startIndex; i < endIndex; i++) {
-            if (!categoryItems.get(i).getAttribute("class").equals("disabled")) {
-                LOGGER.error("{} should be disabled when {} category is selected", categoryItems.get(i).getText(), categoryName);
+            if (!categoryElements.get(i).getAttribute("class").equals("disabled")) {
+                LOGGER.error("{} should be disabled when {} category is selected", categoryElements.get(i).getText(), categoryName);
                 areElementsDisabled = false;
                 break;
             }

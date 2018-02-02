@@ -24,12 +24,15 @@ public class DateRangeTester extends BaseTester {
     }
 
     public void expandDateRangeMenu(boolean expand) {
+
         if (expand) {
+            LOGGER.debug("Expanding Date Range menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.DATE_RANGE)) {
                 infringementSummaryPage.collapseAllMenus();
                 infringementSummaryPage.clickOnDateRangeMenuButton();
             }
         } else {
+            LOGGER.debug("Collapsing Date Range menu filter");
             if (infringementSummaryPage.isMenuExpanded(MenuType.DATE_RANGE)) {
                 infringementSummaryPage.clickOnDateRangeMenuButton();
             }
@@ -37,6 +40,7 @@ public class DateRangeTester extends BaseTester {
     }
 
     public void setDateRange(String dateRange) {
+        infringementSummaryPage.expandSideBar();
         expandDateRangeMenu(true);
         infringementSummaryPage.setDateRange(dateRange);
     }

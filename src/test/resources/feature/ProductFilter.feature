@@ -31,16 +31,19 @@ Scenario: [] Verify Product selection after removing one option
     And I remove 'Theeb' option from 'Product' menu 
     Then 'Theeb' option from 'Product' menu is not selected 
     
+@Mobile
 Scenario: [] Verify Product filter search box with results 
     When I select 'Films' option from 'Campaign' menu 
     And I search for 'Chaos' 'Product' 
     Then '1' results are displayed in 'Product' filter 
     
+@Mobile
 Scenario: [] Verify Product filter search box without results 
     When I select 'Films' option from 'Campaign' menu 
     And I search for 'xxxx' 'Product' 
     Then '0' results are displayed in 'Product' filter 
     
+@Mobile    
 Scenario: [] Verify that Product options can be selected after search
     Given I select 'Films' option from 'Campaign' menu 
     When I search for 'in' 'Product' and select the results

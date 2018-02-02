@@ -13,6 +13,7 @@ import com.muso.testers.ReportTester;
 import com.muso.testers.TypeTester;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class BaseStepDefinition {
 
@@ -39,6 +40,20 @@ public class BaseStepDefinition {
 
         assertEquals("MUSO Dashboard", dashboardTester.getPageTitle());
 
+        initTesters();
+    }
+
+    @Given("^I'm accessing dashboard using '(.*)'$")
+    public void I_am_accessing_dashboard(String user) throws Throwable {
+        dashboardTester.openDashboard(user);
+    }
+
+    @Then("^I'm redirected to musoWeb Login Page$")
+    public void I_am_redirected_to_login_page() {
+        assertEquals("Login – MUSO – DISCOVER, PROTECT, CONNECT", dashboardTester.getPageTitle());
+    }
+
+    private void initTesters() {
         campaignTester = new CampaignTester(driver);
         productTester = new ProductTester(driver);
         typeTester = new TypeTester(driver);

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.muso.enums.CategoryType;
+import com.muso.enums.MenuType;
 import com.muso.enums.RegionType;
 import com.muso.pages.InfringementSummaryPage.InfringementSummaryPageBase;
 
@@ -44,12 +45,42 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
 
     }
 
-    public void clickOnRegionButton() {
+    public void expandRegionMenu(boolean expand) {
+        if (expand) {
+            LOGGER.debug("Expanding Region menu filter");
+            if (isMenuExpanded(MenuType.REGION)) {
+                collapseAllMenus();
+                clickOnRegionMenuButton();
+            }
+        } else {
+            LOGGER.debug("Collapsing Region menu filter");
+            if (isMenuExpanded(MenuType.REGION)) {
+                clickOnRegionMenuButton();
+            }
+        }
+    }
+
+    public void expandPiracyCategoryMenu(boolean expand) {
+        if (expand) {
+            LOGGER.debug("Expanding Piracy Category menu filter");
+            if (isMenuExpanded(MenuType.CATEGORY)) {
+                collapseAllMenus();
+                clickOnPiracyCategoryMenuButton();
+            }
+        } else {
+            LOGGER.debug("Collapsing Piracy Category menu filter");
+            if (isMenuExpanded(MenuType.CATEGORY)) {
+                clickOnPiracyCategoryMenuButton();
+            }
+        }
+    }
+
+    public void clickOnRegionMenuButton() {
         LOGGER.debug("Clicking on Region button");
         regionMenuButton.click();
     }
 
-    public void clickOnPiracyCategoryButton() {
+    public void clickOnPiracyCategoryMenuButton() {
         LOGGER.debug("Clicking on Piracy Category button");
         piracyCategoryMenuButton.click();
     }
@@ -89,11 +120,11 @@ public class MarketAnalyticsPage extends InfringementSummaryPageBase {
         super.collapseAllMenus();
 
         if (isMenuExpanded(regiontOptionsHolder)) {
-            clickOnRegionButton();
+            clickOnRegionMenuButton();
         }
 
         if (isMenuExpanded(piracyCategoryOptionsHolder)) {
-            clickOnPiracyCategoryButton();
+            clickOnPiracyCategoryMenuButton();
         }
     }
 

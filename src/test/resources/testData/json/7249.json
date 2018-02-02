@@ -1,5 +1,6 @@
 {
+    "description" : "Token for user 7249 with CORE_MANAGED and MARKET_ANALYTICS serviceTypes",
     "username" : "bogdan.tanasoiu@muso.com",
     "password":"CYVZ+0z0dXUIMBDpGkw41w==",
-    "jwt_token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjcyNDksImNyZWF0ZWQiOjE1MDc4NzEzNTYyNjIsInNlcnZpY2VzIjpbeyJleHBpcnlEYXRlIjpudWxsLCJzZXJ2aWNlVHlwZSI6Ik1BUktFVF9BTkFMWVRJQ1MifSx7ImV4cGlyeURhdGUiOm51bGwsInNlcnZpY2VUeXBlIjoiQ09SRV9NQU5BR0VEIn1dfQ.zWkLkGD4Udnnz4DDm6GHTPU6XE8jWew1dM9-bSte7d_kspJGLymLnKc4FoBfC3sgvUTGLMXEfvrGpubzVbYZWw"
+    "jwt_token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjcyNDksImNyZWF0ZWQiOjE1MTYzNjc5MzAyMTEsInNlcnZpY2VzIjpbeyJleHBpcnlEYXRlIjpudWxsLCJzZXJ2aWNlVHlwZSI6Ik1BUktFVF9BTkFMWVRJQ1MifSx7ImV4cGlyeURhdGUiOm51bGwsInNlcnZpY2VUeXBlIjoiQ09SRV9TRUxGX01BTkFHRUQifV19.c4xweqpbf-R72V5lh_uIH7i3s3NZb30bV7uUo1P1Qkzub0pdSZS6E-tHbnT3SA4tmgdbBAER7awGQkVHdWSmDg"
 }

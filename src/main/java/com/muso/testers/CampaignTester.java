@@ -2,6 +2,7 @@ package com.muso.testers;
 
 import java.util.ArrayList;
 
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,41 @@ public class CampaignTester extends BaseTester {
     }
 
     public void searchForCampaign(String optionName) {
+        infringementSummaryPage.expandSideBar();
         expandCampaignMenu(true);
-        infringementSummaryPage.searchForCampaign(optionName);
+        try {
+            infringementSummaryPage.searchForCampaign(optionName);
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available on MOBIlE devices. Skipping search");
+        }
+
+    }
+
+    public int getNumberOfSelectedCampaigns() {
+        LOGGER.debug("Returning number of selected campaigns");
+        return infringementSummaryPage.getCampaignSelectionNumber();
+    }
+
+    public void setCampaign(String action, String campaign) {
+        infringementSummaryPage.expandSideBar();
+        switch (action) {
+        case "remove":
+            infringementSummaryPage.collapseAllMenus();
+            infringementSummaryPage.removeCampaign(campaign);
+            break;
+        default:
+            expandCampaignMenu(true);
+            infringementSummaryPage.searchForCampaignAndSelect(campaign);
+            break;
+        }
+    }
+
+    public void setCampaignFromTable(String campaignName) {
+        infringementSummaryPage.clickOnCampaignFromTable(campaignName);
+
     }
 
     public void expandCampaignMenu(boolean expand) {
-
         if (expand) {
             LOGGER.debug("Expanding Campaign menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.CAMPAIGN)) {
@@ -44,26 +74,6 @@ public class CampaignTester extends BaseTester {
                 infringementSummaryPage.clickOnCampaignMenuButton();
             }
         }
-    }
-
-    public int getNumberOfSelectedCampaigns() {
-        LOGGER.debug("Returning number of selected campaigns");
-        return infringementSummaryPage.getCampaignSelectionNumber();
-    }
-
-    public void setCampaign(String action, String campaign) {
-
-        switch (action) {
-        case "remove":
-            infringementSummaryPage.collapseAllMenus();
-            infringementSummaryPage.removeCampaign(campaign);
-            break;
-        default:
-            expandCampaignMenu(true);
-            infringementSummaryPage.setCampaign(campaign);
-            break;
-        }
-
     }
 
     public boolean isCampaignOptionSelected(String optionName, boolean expectedSelection) {
@@ -97,7 +107,7 @@ public class CampaignTester extends BaseTester {
     }
 
     public ArrayList<String> getCampaignOptions() {
-
+        expandCampaignMenu(true);
         ArrayList<String> campaignOptions = infringementSummaryPage.getCampaignOptions();
         LOGGER.debug("Retrieved Campaign filter availabe options {}", campaignOptions.toString());
 
@@ -110,6 +120,7 @@ public class CampaignTester extends BaseTester {
     }
 
     public ArrayList<String> getCampaignSelection() {
+        expandCampaignMenu(true);
         return infringementSummaryPage.getCampaignFilterSelectedOptionsFromFilter();
     }
 
@@ -128,10 +139,8 @@ public class CampaignTester extends BaseTester {
 
     //PRIVATE METHODS
     private boolean isCategoryElementsDisabled(String categoryName) {
-
         expandCampaignMenu(true);
         return infringementSummaryPage.areCampaignsFromCategoryDisabled(categoryName);
-
     }
 
     private boolean isCampaignFilterApplied(ArrayList<String> filter) {
@@ -152,4 +161,5 @@ public class CampaignTester extends BaseTester {
         }
         return false;
     }
+
 }

@@ -24,16 +24,17 @@ public class MemberTester extends BaseTester {
     public void expandMembersMenu(boolean expand) {
 
         if (expand) {
+            LOGGER.debug("Expanding Members menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.MEMBERS)) {
                 infringementSummaryPage.collapseAllMenus();
                 infringementSummaryPage.clickOnMembersMenuButton();
             }
         } else {
+            LOGGER.debug("Collapsing Members menu filter");
             if (infringementSummaryPage.isMenuExpanded(MenuType.MEMBERS)) {
                 infringementSummaryPage.clickOnMembersMenuButton();
             }
         }
-
     }
 
     public ArrayList<String> getMembersOptions() {
@@ -48,6 +49,7 @@ public class MemberTester extends BaseTester {
     }
 
     public void setMember(String member) {
+        infringementSummaryPage.expandSideBar();
         expandMembersMenu(true);
         infringementSummaryPage.setMember(member);
     }

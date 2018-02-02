@@ -2,6 +2,7 @@ package com.muso.selenium.base.utils;
 
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -26,10 +27,18 @@ public class Clicker {
                     new Object[] { element });
         } catch (WebDriverException e) {
             if (e.getLocalizedMessage().contains("is not clickable at point")) {
-                LOGGER.debug("Element is not clickable at point exception encountered: ");
+                LOGGER.warn("Element is not clickable at point exception encountered. Trying to scroll into view and click again ");
                 ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);",
                         new Object[] { element });
-                element.click();
+                try {
+                    element.click();
+                } catch (WebDriverException ex) {
+                    if (ex.getLocalizedMessage().contains("dropdown-backdrop")) {
+                        LOGGER.warn("Mobile device bullshit. Closing the menu by clicking on dropdown-backdrop");
+                        element.sendKeys(Keys.ESCAPE);
+                    }
+                }
+
             } else {
                 LOGGER.warn(e.getLocalizedMessage());
             }

@@ -32,7 +32,6 @@ import cucumber.api.java.en.When;
 public class DashBoard_StepDefinition {
 
     protected WebDriver driver = Hooks.driver;
-    private String expandedMenu;
     private static final Logger LOGGER = LoggerFactory.getLogger(DashBoard_StepDefinition.class);
     private DashboardTester dashboardTester = BaseStepDefinition.dashboardTester;
     private CampaignTester campaignTester = BaseStepDefinition.campaignTester;
@@ -44,7 +43,6 @@ public class DashBoard_StepDefinition {
 
     @When("^I expand '(Report|Date Range|Campaign|Type|Members)' menu$")
     public void I_expand_menu(String menuName) {
-        this.expandedMenu = menuName;
         LOGGER.info("Expanding menu: {}", menuName);
 
         switch ((MenuType.fromString(menuName))) {
@@ -68,7 +66,7 @@ public class DashBoard_StepDefinition {
         }
     }
 
-    @Then("^I see (\\d+) available options in '(Report,Date Range,Members,Campaign|Product|Type)' menu filter:$")
+    @Then("^I see (\\d+) available options in '(Report|Date Range|Members|Campaign|Product|Type)' menu filter:$")
     public void I_should_see_available_options(int i, String menuName, List<String> options) {
         List<String> availableOptions;
 
@@ -135,6 +133,7 @@ public class DashBoard_StepDefinition {
 
     @Then("^'(Campaign|Product|Type)' menu filter is (enabled|disabled)$")
     public void filter_is_enabled(String menuName, String status) {
+        dashboardTester.expandSidebar();
         boolean expectedStatus = true;
 
         if (status.equals("disabled"))
@@ -315,10 +314,12 @@ public class DashBoard_StepDefinition {
             case REPORT:
                 assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.REPORT.isOptionValid(optionName));
                 reportTester.setReport(optionName);
+                assertTrue(optionName + " was not selected", reportTester.isReportOptionSelected(optionName, true));
                 break;
             case DATE_RANGE:
                 assertTrue(optionName + " is not a valid option for " + menuName + " or not available for the current user", MenuType.DATE_RANGE.isOptionValid(optionName));
                 dateRangeTester.setDateRange(optionName);
+                assertTrue(optionName + " was not selected", dateRangeTester.isDateRangeOptionSelected(optionName, true));
                 break;
             case CAMPAIGN:
                 campaignTester.setCampaign(action, optionName);
@@ -326,12 +327,12 @@ public class DashBoard_StepDefinition {
                 if (action.equals("select")) {
                     assertTrue(optionName + " was not sleected.", campaignTester.isCampaignOptionSelected(optionName, true));
                     if (campaignTester.getNumberOfSelectedCampaigns() < 6)
-                        assertTrue(optionName + "is selected but not displayed in header", campaignTester.isCampaignDisplayedInHeader(optionName));
+                        assertTrue(optionName + " is selected but not displayed in header", campaignTester.isCampaignDisplayedInHeader(optionName));
 
                 } else {
                     assertTrue(optionName + " was not removed.", campaignTester.isCampaignOptionSelected(optionName, false));
                     if (campaignTester.getNumberOfSelectedCampaigns() < 6)
-                        assertFalse(optionName + "is not selected but displayed in header", campaignTester.isCampaignDisplayedInHeader(optionName));
+                        assertFalse(optionName + " is not selected but displayed in header", campaignTester.isCampaignDisplayedInHeader(optionName));
                 }
 
                 break;

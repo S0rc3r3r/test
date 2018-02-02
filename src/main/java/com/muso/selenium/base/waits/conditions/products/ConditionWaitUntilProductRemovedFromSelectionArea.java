@@ -10,13 +10,13 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionWaitUntilProductRemovedFromSelectionArea implements ExpectedCondition<Boolean> {
+public class ConditionWaitUntilProductRemovedFromSelectionArea extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-product-filter ul.dropdown-menu.inner li";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilProductRemovedFromSelectionArea.class);
 
     public ConditionWaitUntilProductRemovedFromSelectionArea(String name) {
@@ -31,7 +31,7 @@ public class ConditionWaitUntilProductRemovedFromSelectionArea implements Expect
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
         try {
-            WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+            WebElement elem = driver.findElement(factory.cssContainingText(productSelectionItems_CSS, name));
 
             if (elem.isDisplayed() && elem.getAttribute("aria-selected").equals("true"))
                 return false;

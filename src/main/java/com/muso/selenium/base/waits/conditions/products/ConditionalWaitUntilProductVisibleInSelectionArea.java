@@ -9,14 +9,14 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.muso.selenium.base.waits.conditions.campaigns.ConditionWaitUntilCampaignSelected;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionalWaitUntilProductVisibleInSelectionArea implements ExpectedCondition<Boolean> {
+public class ConditionalWaitUntilProductVisibleInSelectionArea extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-product-filter muso-filter-product-item span";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilCampaignSelected.class);
 
     public ConditionalWaitUntilProductVisibleInSelectionArea(String name) {
@@ -30,7 +30,7 @@ public class ConditionalWaitUntilProductVisibleInSelectionArea implements Expect
 
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
-        WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+        WebElement elem = driver.findElement(factory.cssContainingText(productSelectionItems_CSS, name));
 
         try {
             if (elem.getText().equals(StringEscapeUtils.unescapeEcmaScript(name)) && elem.getAttribute("style").equals("opacity: 1;"))

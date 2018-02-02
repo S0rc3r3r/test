@@ -1,0 +1,6 @@
+{
+    "description" : "7249 JWT will expire at 19/01/18 08:30:16",
+    "username" : "expired_token",
+    "password":"CYVZ+0z0dXUIMBDpGkw41w==",
+    "jwt_token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjcyNDksImNyZWF0ZWQiOjE1MTYzNDg4MTY1MDYsInNlcnZpY2VzIjpbeyJleHBpcnlEYXRlIjoyNTI0NjcwMzMxMDAwLCJzZXJ2aWNlVHlwZSI6IkNPUkVfTUFOQUdFRCJ9LHsiZXhwaXJ5RGF0ZSI6MTQ4NDg0MTMzMjAwMCwic2VydmljZVR5cGUiOiJDT1JFX1NFTEZfTUFOQUdFRCJ9XSwiZXhwIjoxNTE2MzUwNjE2fQ.PvnqI7TyUPB2moQfKk8kKSWSdOGM-Xg_9ldnPmFmqXFH2P_HtMeQNb5GlYljotys5QdcIkTdgHVybRFJKxDd9g"
+}

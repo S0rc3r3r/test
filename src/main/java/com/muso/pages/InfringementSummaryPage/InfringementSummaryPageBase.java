@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,59 +33,59 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfringementSummaryPageBase.class);
 
     // MENU BUTTONS
-    @FindBy(css = "button[title='Report']")
+    @FindBy(css = ReportMenuButton_CSS)
     protected WebElement ReportMenuButton;
 
-    @FindBy(css = "button[title='Members']")
+    @FindBy(css = MembersMenuButton_CSS)
     protected WebElement MembersMenuButton;
 
-    @FindBy(css = "button[title='Date range']")
+    @FindBy(css = DateRangeMenuButton_CSS)
     protected WebElement DateRangeMenuButton;
 
-    @FindBy(css = "button[title='Campaign']")
+    @FindBy(css = CampaignMenuButton_CSS)
     protected WebElement CampaignMenuButton;
 
-    @FindBy(css = "button[title='Type']")
+    @FindBy(css = TypeMenuButton_CSS)
     protected WebElement TypeMenuButton;
 
-    @FindBy(css = "button[title='Product']")
+    @FindBy(css = ProductMenuButton_CSS)
     protected WebElement ProductMenuButton;
 
-    @FindBy(css = "#links span")
+    @FindBy(css = SupportButton_CSS)
     protected WebElement SupportButton;
 
-    @FindBy(css = "#links a:nth-child(1)")
+    @FindBy(css = AccountButton_CSS)
     protected WebElement AccountButton;
 
-    @FindBy(css = "#links a:nth-child(2)")
+    @FindBy(css = LogoutButton_CSS)
     protected WebElement LogoutButton;
 
     // MENU OPTIONS HOLDERS
-    @FindBy(css = "muso-report-filter ul.dropdown-menu.inner")
+    @FindBy(css = reportHolder_CSS)
     protected WebElement reportOptionsHolder;
 
-    @FindBy(css = "muso-filter-user ul.dropdown-menu.inner")
+    @FindBy(css = memberHolder_CSS)
     protected WebElement membersOptionsHolder;
 
-    @FindBy(css = "muso-period-filter div.daterangepicker.dropdown-menu.opensleft")
+    @FindBy(css = dateRangeOptionsHolder_CSS)
     protected WebElement dateRangeOptionsHolder;
 
-    @FindBy(css = "muso-campaign-filter ul.dropdown-menu.inner")
+    @FindBy(css = campaignOptionsHolder_CSS)
     protected WebElement campaignOptionsHolder;
 
-    @FindBy(css = "muso-campaign-filter input.form-control")
+    @FindBy(css = campaignSearchBox_CSS)
     protected WebElement campaignSearchBox;
 
-    @FindBy(css = "muso-filter-type ul.dropdown-menu.inner")
+    @FindBy(css = typeHolder_CSS)
     protected WebElement typeOptionsHolder;
 
-    @FindBy(css = "muso-filter-type input.form-control")
+    @FindBy(css = typeSearchBox_CSS)
     protected WebElement typeSearchBox;
 
-    @FindBy(css = "muso-product-filter ul.dropdown-menu.inner")
+    @FindBy(css = productOptionsHolder_CSS)
     protected WebElement productOptionsHolder;
 
-    @FindBy(css = "muso-product-filter input.form-control")
+    @FindBy(css = productSearchBox_CSS)
     protected WebElement productSearchBox;
 
     public InfringementSummaryPageBase(WebDriver driver) {
@@ -121,7 +122,6 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         default:
             throw new InvalidArgumentException("Unknown report " + menu.getName());
         }
-
         return isMenuEnabled;
     }
 
@@ -161,7 +161,27 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         default:
             throw new InvalidArgumentException("Unknown report " + menu.getName());
         }
+    }
 
+    public void expandSideBar() {
+        if (!isSidebarExpanded())
+            clickOnToggleButton();
+    }
+
+    public boolean isSidebarExpanded() {
+
+        if (ToggleButton.isDisplayed()) {
+            if (SidebarMenu.getAttribute("class").contains("show"))
+                return true;
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public void clickOnToggleButton() {
+        LOGGER.debug("Expanding SideMenu.");
+        ToggleButton.click();
     }
 
     public void clickOnSupportButton() {
@@ -203,50 +223,20 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         }
     }
 
-    public void clickOnTypeMenuButton() {
-        LOGGER.debug("Clicking on Type menu button");
-        TypeMenuButton.click();
-    }
-
-    public void clickOnDateRangeMenuButton() {
-        LOGGER.debug("Clicking on Date Range menu button");
-        DateRangeMenuButton.click();
-    }
-
-    public void clickOnCampaignMenuButton() {
-        LOGGER.debug("Clicking on Campaign menu button");
-        CampaignMenuButton.click();
-    }
-
-    public void clickOnReportMenuButton() {
-        LOGGER.debug("Clicking on Report menu button");
-        ReportMenuButton.click();
-    }
-
-    public void clickOnProductMenuButton() {
-        LOGGER.debug("Clicking on Product menu button");
-        ProductMenuButton.click();
-    }
-
-    public void clickOnMembersMenuButton() {
-        LOGGER.debug("Clicking on Members menu button");
-        MembersMenuButton.click();
-    }
-
     public void setMember(String optionName) {
         LOGGER.debug("Selecting {} member", optionName);
-
-        WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExtExpectedConditions.visibilityOfMemberInFilter(optionName)).click();
+        WebElement memberElement = WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExtExpectedConditions.visibilityOfMemberInFilter(optionName));
+        Clicker.safeClick(driver, memberElement);
 
         persistenceManager.setMember(optionName);
     }
 
     public void setReport(String optionName) {
         LOGGER.debug("Selecting {} report", optionName);
-        WebElement reportElement = driver.findElement(factory.cssContainingText("span.text", optionName));
-        reportElement.click();
-        persistenceManager.setReport(ReportType.fromString(optionName));
+        WebElement reportElement = WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExtExpectedConditions.visibilityOfReportInFilter(optionName));
+        Clicker.safeClick(driver, reportElement);
 
+        persistenceManager.setReport(ReportType.fromString(optionName));
     }
 
     public void setCampaign(String optionName) {
@@ -268,8 +258,8 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         LOGGER.debug("Removing {} campaign", optionName);
         boolean itemRemoved = false;
 
-        List<WebElement> campaignSelectionHolder = driver.findElements(By.cssSelector("muso-campaign-filter muso-filter-campaign-item"));
-        List<WebElement> categorySelectionHolder = driver.findElements(By.cssSelector("muso-campaign-filter muso-filter-campaign-type-item"));
+        List<WebElement> campaignSelectionHolder = driver.findElements(By.cssSelector(campaignItemHolder_CSS));
+        List<WebElement> categorySelectionHolder = driver.findElements(By.cssSelector(campaignCategoryHolder_CSS));
 
         if (campaignSelectionHolder.isEmpty() && categorySelectionHolder.isEmpty()) {
             LOGGER.warn("Unable to remove campaing {}. There is no campaign selected", optionName);
@@ -303,17 +293,14 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public void setDateRange(String optionName) {
+        LOGGER.debug("Selecting {} Date Range", optionName);
+        WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExtExpectedConditions.visibilityOfDateRangeInFilter(optionName)).click();
 
-        LOGGER.debug("Selecting {} date range", optionName);
-
-        WebElement dateRangeElement = dateRangeOptionsHolder.findElement(factory.cssContainingText("li", optionName));
-        dateRangeElement.click();
         persistenceManager.setDateRange(DateRangeType.fromString(optionName));
     }
 
     public void setProduct(String optionName) {
-
-        LOGGER.debug("Selecting '{}' product", optionName);
+        LOGGER.debug("Selecting '{}' Product", optionName);
 
         final WebElement productElement = WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExtExpectedConditions.visibilityOfProductInFilter(optionName));
         Clicker.safeClick(driver, productElement);
@@ -328,7 +315,6 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public void removeProduct(String optionName) {
-
         LOGGER.debug("Removing '{}' product", optionName);
         boolean itemRemoved = false;
 
@@ -371,7 +357,6 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public void removeType(String optionName) {
-
         LOGGER.debug("Removing '{}' type", optionName);
         boolean itemRemoved = false;
 
@@ -399,15 +384,15 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     protected boolean isMenuExpanded(WebElement menuElement) {
-
         try {
             if (Boolean.valueOf(menuElement.getAttribute("aria-expanded")) || Boolean.valueOf(menuElement.getAttribute("style").contains("display: block"))) {
                 return true;
             }
-            return false;
+
         } catch (NoSuchElementException ex) {
-            return false;
         }
+
+        return false;
     }
 
     public String getReportSelection() {
@@ -483,13 +468,20 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public ArrayList<String> getCampaignOptions() {
+        if (!isMenuExpanded(MenuType.CAMPAIGN)) {
+            collapseAllMenus();
+            clickOnCampaignMenuButton();
+        }
+
         ArrayList<String> campaigns = new ArrayList<String>();
         List<WebElement> campaignElements = getCampaignFilterWebElements();
 
         for (WebElement campaignElement : campaignElements) {
-            if (!campaignElement.getAttribute("class").equals("no-results"))
+            if (!campaignElement.getAttribute("class").equals("no-results") && !campaignElement.getText().isEmpty())
                 campaigns.add(campaignElement.getText());
         }
+
+        LOGGER.debug("Found {} campaigns in Campaign Filter", campaigns.size());
 
         return campaigns;
     }
@@ -571,7 +563,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         List<WebElement> productElements = getProductFilterWebElements();
 
         for (WebElement productElement : productElements) {
-            if (!productElement.getAttribute("class").equals("no-results"))
+            if (!productElement.getAttribute("class").equals("no-results") && !productElement.getText().isEmpty())
                 products.add(productElement.getText());
         }
 
@@ -582,7 +574,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
 
         ArrayList<WebElement> optionsList = new ArrayList<WebElement>();
 
-        List<WebElement> productElements = (new WebDriverWait(driver, 10)).until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector("muso-product-filter ul.dropdown-menu.inner li"), 0));
+        List<WebElement> productElements = (new WebDriverWait(driver, 10)).until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector(productOptionsItems_CSS), 0));
 
         for (WebElement element : productElements) {
             if (!element.getAttribute("class").equals("hidden"))
@@ -595,7 +587,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     public ArrayList<String> getProductFilterSelectedOptionsFromHolder() {
 
         ArrayList<String> selectedProducts = new ArrayList<String>();
-        List<WebElement> productSelectionHolder = driver.findElements(By.cssSelector("muso-product-filter muso-filter-product-item"));
+        List<WebElement> productSelectionHolder = driver.findElements(By.cssSelector(productOptionsSelectionHolder_CSS));
 
         if (productSelectionHolder.isEmpty()) {
             selectedProducts.add("All products");
@@ -632,24 +624,12 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         return selectedTypes;
     }
 
-    private List<WebElement> getTypeFilterWebElements() {
-        ArrayList<WebElement> optionsList = new ArrayList<WebElement>();
-        List<WebElement> menuOptions = typeOptionsHolder.findElements(By.cssSelector("li"));
-
-        for (WebElement element : menuOptions) {
-            if (!element.getAttribute("class").equals("hidden"))
-                optionsList.add(element);
-        }
-
-        return optionsList;
-    }
-
     public ArrayList<String> getTypeOptions() {
         ArrayList<String> types = new ArrayList<String>();
         List<WebElement> menuOptions = getTypeFilterWebElements();
 
         for (WebElement option : menuOptions) {
-            if (!option.getAttribute("class").equals("no-results"))
+            if (!option.getAttribute("class").equals("no-results") && !option.getText().isEmpty())
                 types.add(option.getText());
         }
 
@@ -663,7 +643,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         }
 
         ArrayList<String> selectedTypes = new ArrayList<String>();
-        List<WebElement> typesSelectionHolder = driver.findElements(By.cssSelector("muso-filter-type muso-filter-type-item"));
+        List<WebElement> typesSelectionHolder = driver.findElements(By.cssSelector(productOptionsSelectionHolder_CSS));
 
         if (typesSelectionHolder.isEmpty()) {
             selectedTypes.add("All Types");
@@ -681,16 +661,21 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public void searchForTypeAndSelect(String optionName) {
-        searchForType(optionName);
+        try {
+            searchForType(optionName);
 
-        List<String> searchResults = getTypeOptions();
+            List<String> searchResults = getTypeOptions();
 
-        for (String result : searchResults) {
-            setType(result);
+            for (String result : searchResults) {
+                setType(result);
+            }
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available. Selecting {} type from list", optionName);
+            setType(optionName);
         }
     }
 
-    public void searchForType(String optionName) {
+    public void searchForType(String optionName) throws InvalidElementStateException {
         LOGGER.debug("Searching for {} option under Type", optionName);
         typeSearchBox.clear();
         typeSearchBox.sendKeys(optionName);
@@ -698,37 +683,50 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
     }
 
     public void searchForProductAndSelect(String optionName) {
-        searchForProduct(optionName);
+        try {
+            searchForProduct(optionName);
 
-        List<String> searchResults = getProductOptions();
+            List<String> searchResults = getProductOptions();
 
-        for (String result : searchResults) {
-            setProduct(result);
+            for (String result : searchResults) {
+                setProduct(result);
+            }
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available. Selecting {} product from list", optionName);
+            setProduct(optionName);
         }
     }
 
-    public void searchForProduct(String optionName) {
+    public void searchForProduct(String optionName) throws InvalidElementStateException {
         LOGGER.debug("Searching for {} option under Product", optionName);
         productSearchBox.clear();
         productSearchBox.sendKeys(optionName);
-        ThreadHandler.sleep(5000);
+        ThreadHandler.shortSleep();
     }
 
     public void searchForCampaignAndSelect(String optionName) {
-        searchForCampaign(optionName);
+        try {
+            searchForCampaign(optionName);
 
-        List<String> searchResults = getCampaignOptions();
+            List<String> searchResults = getCampaignOptions();
 
-        for (String result : searchResults) {
-            setCampaign(result);
+            for (String result : searchResults) {
+                setCampaign(result);
+            }
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available. Selecting {} campaign from list", optionName);
+            setCampaign(optionName);
         }
+
     }
 
-    public void searchForCampaign(String optionName) {
+    public void searchForCampaign(String optionName) throws InvalidElementStateException {
         LOGGER.debug("Searching for {} option under Campaign", optionName);
+
         campaignSearchBox.clear();
         campaignSearchBox.sendKeys(optionName);
         ThreadHandler.shortSleep();
+
     }
 
     public ArrayList<String> getReportOptions() {
@@ -826,7 +824,49 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
         return getCampaignFromHeader().contains(campaignName);
     }
 
+    // PRIVATE METHODS
+    public void clickOnTypeMenuButton() {
+        LOGGER.debug("Clicking on Type menu button");
+        Clicker.safeClick(driver, TypeMenuButton);
+        // TypeMenuButton.click();
+    }
+
+    public void clickOnDateRangeMenuButton() {
+        LOGGER.debug("Clicking on Date Range menu button");
+        Clicker.safeClick(driver, DateRangeMenuButton);
+        //DateRangeMenuButton.click();
+
+    }
+
+    public void clickOnCampaignMenuButton() {
+        LOGGER.debug("Clicking on Campaign menu button");
+        Clicker.safeClick(driver, CampaignMenuButton);
+        // CampaignMenuButton.click();
+    }
+
+    public void clickOnReportMenuButton() {
+        LOGGER.debug("Clicking on Report menu button");
+        Clicker.safeClick(driver, ReportMenuButton);
+        //ReportMenuButton.click();
+    }
+
+    public void clickOnProductMenuButton() {
+        LOGGER.debug("Clicking on Product menu button");
+        Clicker.safeClick(driver, ProductMenuButton);
+        // ProductMenuButton.click();
+    }
+
+    public void clickOnMembersMenuButton() {
+        LOGGER.debug("Clicking on Members menu button");
+        Clicker.safeClick(driver, MembersMenuButton);
+        // MembersMenuButton.click();
+    }
+
     private void verifyCampaignFilterAndHeader() {
+        if (!isMenuExpanded(MenuType.CAMPAIGN)) {
+            collapseAllMenus();
+            clickOnCampaignMenuButton();
+        }
         ArrayList<String> selectedCampaigns = getCampaignFilterSelectedOptionsFromFilter();
         final int expected = persistenceManager.getCampaigns().size();
         final int actual = selectedCampaigns.size();
@@ -850,5 +890,17 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
                 }
             }
         }
+    }
+
+    private List<WebElement> getTypeFilterWebElements() {
+        ArrayList<WebElement> optionsList = new ArrayList<WebElement>();
+        List<WebElement> menuOptions = typeOptionsHolder.findElements(By.cssSelector("li"));
+
+        for (WebElement element : menuOptions) {
+            if (!element.getAttribute("class").equals("hidden"))
+                optionsList.add(element);
+        }
+
+        return optionsList;
     }
 }

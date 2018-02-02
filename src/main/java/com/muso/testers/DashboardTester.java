@@ -31,7 +31,7 @@ public class DashboardTester extends BaseTester {
     }
 
     public String getPageTitle() {
-        return infringementSummaryPage.getPageTitle();
+        return driver.getTitle();
     }
 
     public boolean isCounterDisplayed(String counterName) {
@@ -109,6 +109,10 @@ public class DashboardTester extends BaseTester {
 
     public Long getProductInfringements(String productName, String period) {
         return infringementSummaryPage.getInfringementsByProductNameAndPeriod(productName, period);
+    }
+
+    public void expandSidebar() {
+        infringementSummaryPage.expandSideBar();
     }
 
 }

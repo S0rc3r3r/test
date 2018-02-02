@@ -9,18 +9,18 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.muso.selenium.base.waits.conditions.campaigns.ConditionWaitUntilCampaignSelected;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionalWaitUntilProductVisibleInFilter implements ExpectedCondition<WebElement> {
+public class ConditionalWaitUntilProductVisibleInFilter extends PageLocators implements ExpectedCondition<WebElement> {
 
-    private String name;
-    private String productHolder = "muso-product-filter ul.dropdown-menu.inner li";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilCampaignSelected.class);
+    private String productName;
 
-    public ConditionalWaitUntilProductVisibleInFilter(String name) {
-        this.name = StringEscapeUtils.escapeEcmaScript(name);
+    public ConditionalWaitUntilProductVisibleInFilter(String productName) {
+        this.productName = StringEscapeUtils.escapeEcmaScript(productName);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ConditionalWaitUntilProductVisibleInFilter implements ExpectedCondi
 
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
-        WebElement elem = driver.findElement(factory.cssContainingText(productHolder, name));
+        WebElement elem = driver.findElement(factory.cssContainingText(productOptionsItems_CSS, productName));
 
         try {
             if (elem.isDisplayed())

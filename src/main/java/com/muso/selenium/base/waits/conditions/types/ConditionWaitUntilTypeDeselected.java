@@ -10,13 +10,13 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionWaitUntilTypeDeselected implements ExpectedCondition<Boolean> {
+public class ConditionWaitUntilTypeDeselected extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-filter-type ul.dropdown-menu.inner li";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilTypeDeselected.class);
 
     public ConditionWaitUntilTypeDeselected(String name) {
@@ -31,7 +31,7 @@ public class ConditionWaitUntilTypeDeselected implements ExpectedCondition<Boole
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
         try {
-            WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+            WebElement elem = driver.findElement(factory.cssContainingText(typeHolderItems_CSS, name));
 
             if (elem.isDisplayed() && !elem.getAttribute("class").equals("selected"))
                 return true;

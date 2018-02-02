@@ -6,8 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.muso.enums.MenuType;
-
 public class RegionTester extends BaseTester {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegionTester.class);
@@ -16,12 +14,8 @@ public class RegionTester extends BaseTester {
         super(driver);
     }
 
-    public void expandRegionMenu() {
-
-        if (!marketAnalyticsPage.isMenuExpanded(MenuType.REGION)) {
-            marketAnalyticsPage.collapseAllMenus();
-            marketAnalyticsPage.clickOnRegionButton();
-        }
+    public void expandRegionMenu(boolean expand) {
+        marketAnalyticsPage.expandRegionMenu(expand);
     }
 
     public void setRegion(String optionName) {

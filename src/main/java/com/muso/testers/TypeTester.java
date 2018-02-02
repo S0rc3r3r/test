@@ -2,6 +2,7 @@ package com.muso.testers;
 
 import java.util.ArrayList;
 
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,16 +28,24 @@ public class TypeTester extends BaseTester {
 
     public void searchForType(String optionName) {
         expandTypeMenu(true);
-        infringementSummaryPage.searchForType(optionName);
+        try {
+            infringementSummaryPage.searchForType(optionName);
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available. Selecting {} type from list", optionName);
+        }
     }
 
     public void expandTypeMenu(boolean expand) {
+        infringementSummaryPage.expandSideBar();
+
         if (expand) {
+            LOGGER.debug("Expanding Type menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.TYPE)) {
                 infringementSummaryPage.collapseAllMenus();
                 infringementSummaryPage.clickOnTypeMenuButton();
             }
         } else {
+            LOGGER.debug("Collapsing Type menu filter");
             if (infringementSummaryPage.isMenuExpanded(MenuType.TYPE)) {
                 infringementSummaryPage.clickOnTypeMenuButton();
             }
@@ -44,6 +53,8 @@ public class TypeTester extends BaseTester {
     }
 
     public void setType(String action, String type) {
+        infringementSummaryPage.expandSideBar();
+
         switch (action) {
         case "remove":
             infringementSummaryPage.collapseAllMenus();
@@ -51,7 +62,7 @@ public class TypeTester extends BaseTester {
             break;
         default:
             expandTypeMenu(true);
-            infringementSummaryPage.setType(type);
+            infringementSummaryPage.searchForTypeAndSelect(type);
             break;
         }
     }

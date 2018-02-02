@@ -2,6 +2,7 @@ package com.muso.testers;
 
 import java.util.ArrayList;
 
+import org.openqa.selenium.InvalidElementStateException;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,12 @@ public class ProductTester extends BaseTester {
 
     public void searchForProduct(String optionName) {
         expandProductMenu(true);
-        infringementSummaryPage.searchForProduct(optionName);
+        try {
+            infringementSummaryPage.searchForProduct(optionName);
+        } catch (InvalidElementStateException ex) {
+            LOGGER.warn("Search BOX not available on MOBIlE devices. Skipping search");
+        }
+
     }
 
     public void searchForProductAndSelect(String searchString) {
@@ -44,6 +50,8 @@ public class ProductTester extends BaseTester {
     }
 
     public void setProduct(String action, String product) {
+        infringementSummaryPage.expandSideBar();
+
         switch (action) {
         case "remove":
             infringementSummaryPage.collapseAllMenus();
@@ -51,12 +59,13 @@ public class ProductTester extends BaseTester {
             break;
         default:
             expandProductMenu(true);
-            infringementSummaryPage.setProduct(product);
+            infringementSummaryPage.searchForProductAndSelect(product);
             break;
         }
     }
 
     public ArrayList<String> getProductSelection() {
+        expandProductMenu(true);
         return infringementSummaryPage.getProductSelection();
     }
 
@@ -66,13 +75,14 @@ public class ProductTester extends BaseTester {
     }
 
     public void expandProductMenu(boolean expand) {
-
         if (expand) {
+            LOGGER.debug("Expanding Product menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.PRODUCT)) {
                 infringementSummaryPage.collapseAllMenus();
                 infringementSummaryPage.clickOnProductMenuButton();
             }
         } else {
+            LOGGER.debug("Collapsing Product menu filter");
             if (infringementSummaryPage.isMenuExpanded(MenuType.PRODUCT)) {
                 infringementSummaryPage.clickOnProductMenuButton();
             }

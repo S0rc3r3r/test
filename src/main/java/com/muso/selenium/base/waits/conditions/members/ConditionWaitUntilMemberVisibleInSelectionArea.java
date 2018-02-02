@@ -9,14 +9,14 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.muso.selenium.base.waits.conditions.campaigns.ConditionWaitUntilCampaignSelected;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionWaitUntilMemberVisibleInSelectionArea implements ExpectedCondition<Boolean> {
+public class ConditionWaitUntilMemberVisibleInSelectionArea extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-filter-user .selectedOptions span";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilCampaignSelected.class);
 
     public ConditionWaitUntilMemberVisibleInSelectionArea(String name) {
@@ -30,7 +30,7 @@ public class ConditionWaitUntilMemberVisibleInSelectionArea implements ExpectedC
 
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
-        WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+        WebElement elem = driver.findElement(factory.cssContainingText(memberSelectedItem_CSS, name));
 
         try {
             if (elem.isDisplayed() && elem.getText().equals(name))

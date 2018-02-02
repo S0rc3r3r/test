@@ -19,19 +19,21 @@ import com.muso.selenium.base.waits.conditions.ExtExpectedConditions;
 public class ReportTester extends BaseTester {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportTester.class);
-    private WebDriver driver;
 
     public ReportTester(WebDriver driver) {
         super(driver);
     }
 
     public void expandReportMenu(boolean expand) {
+
         if (expand) {
+            LOGGER.debug("Expanding Report menu filter");
             if (!infringementSummaryPage.isMenuExpanded(MenuType.REPORT)) {
                 infringementSummaryPage.collapseAllMenus();
                 infringementSummaryPage.clickOnReportMenuButton();
             }
         } else {
+            LOGGER.debug("Collapsing Report menu filter");
             if (infringementSummaryPage.isMenuExpanded(MenuType.REPORT)) {
                 infringementSummaryPage.clickOnReportMenuButton();
             }
@@ -39,6 +41,7 @@ public class ReportTester extends BaseTester {
     }
 
     public void setReport(String report) {
+        infringementSummaryPage.expandSideBar();
         expandReportMenu(true);
         infringementSummaryPage.setReport(report);
 

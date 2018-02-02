@@ -6,8 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,24 +18,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.muso.persistence.PersistenceManager;
+import com.muso.selenium.base.waits.WebDriverWaitManager;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public abstract class AbstractBasePage {
+public abstract class AbstractBasePage extends PageLocators {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBasePage.class);
 
     // HEADERS
-    @FindBy(css = "#header h4")
+    @FindBy(css = reportHeaderElement_CSS)
     protected WebElement reportHeaderElement;
 
-    @FindBy(css = "h2.allCampaigns")
+    @FindBy(css = campaignHeaderElement_CSS)
     protected WebElement campaignHeaderElement;
 
-    @FindBy(css = "h2.dateRange")
+    @FindBy(css = dateRangeHeaderElement_CSS)
     protected WebElement dateRangeHeaderElement;
 
-    @FindBy(css = "#header img")
+    @FindBy(css = logoHeaderElement_CSS)
     protected WebElement logoHeaderElement;
+
+    @FindBy(css = Sidebar_CSS)
+    protected WebElement SidebarMenu;
+
+    @FindBy(id = ToggleButton_ID)
+    protected WebElement ToggleButton;
 
     protected ByAngular.Factory factory;
     protected PersistenceManager persistenceManager;
@@ -48,6 +57,7 @@ public abstract class AbstractBasePage {
     }
 
     protected AbstractBasePage(WebDriver driver) {
+
         this.driver = driver;
         driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 
@@ -61,6 +71,12 @@ public abstract class AbstractBasePage {
 
         factory = ngwd.makeByAngularFactory();
         persistenceManager = PersistenceManager.getInstance();
+
+        WebDriverWaitManager.getInstance().explicitShortWaitUntilTrue(driver, ExpectedConditions.attributeToBe(By.cssSelector("muso-filter-type > li"), "style", "opacity: 1;"));
+        //WebDriverWaitManager.getInstance().explicitShortWaitUntilTrue(driver, ExpectedConditions.attributeToBe(By.cssSelector("muso-period-filter > li"), "style", "opacity: 1;"));
+        //WebDriverWaitManager.getInstance().explicitShortWaitUntilTrue(driver, ExpectedConditions.attributeToBe(By.cssSelector("muso-campaign-filter > li"), "style", "opacity: 1;"));
+        //WebDriverWaitManager.getInstance().explicitShortWaitUntilTrue(driver, ExpectedConditions.attributeToBe(By.cssSelector("muso-report-filter > li"), "style", "opacity: 1;"));
+        //WebDriverWaitManager.getInstance().explicitShortWaitUntilTrue(driver, ExpectedConditions.attributeToBe(By.cssSelector("muso-product-filter > li"), "style", "opacity: 1;"));
     }
 
     private void navigateTo(final String dashBoard_Url) {
@@ -82,6 +98,13 @@ public abstract class AbstractBasePage {
     }
 
     public String getCampaignFromHeader() {
+
+        Actions action = new Actions(driver);
+        action.sendKeys(Keys.HOME);
+        action.build().perform();
+
+        WebDriverWaitManager.getInstance().explicitShortWaitUntil(driver, ExpectedConditions.visibilityOf(campaignHeaderElement));
+
         LOGGER.debug("Campaign displayed in header: {}", campaignHeaderElement.getText());
         return campaignHeaderElement.getText();
     }

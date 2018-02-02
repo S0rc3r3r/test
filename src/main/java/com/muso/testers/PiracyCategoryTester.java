@@ -6,8 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.muso.enums.MenuType;
-
 public class PiracyCategoryTester extends BaseTester {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PiracyCategoryTester.class);
@@ -16,12 +14,8 @@ public class PiracyCategoryTester extends BaseTester {
         super(driver);
     }
 
-    public void expandPiracyCategoryMenu() {
-
-        if (!marketAnalyticsPage.isMenuExpanded(MenuType.CATEGORY)) {
-            marketAnalyticsPage.collapseAllMenus();
-            marketAnalyticsPage.clickOnPiracyCategoryButton();
-        }
+    public void expandPiracyCategoryMenu(boolean expand) {
+        marketAnalyticsPage.expandPiracyCategoryMenu(expand);
     }
 
     public void setPiracyCategory(String optionName) {

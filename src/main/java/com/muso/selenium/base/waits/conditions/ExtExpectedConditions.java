@@ -62,23 +62,23 @@ public class ExtExpectedConditions {
     }
 
     // DATE RANGE METHODS
-    public static ExpectedCondition<WebElement> visibilityOfDateRangeInFilter(String reportName) {
-        return new ConditionWaitUntilDateRangeVisibleInFilter(reportName);
+    public static ExpectedCondition<WebElement> visibilityOfDateRangeInFilter(String dateRangeName) {
+        return new ConditionWaitUntilDateRangeVisibleInFilter(dateRangeName);
     }
 
-    public static ExpectedCondition<Boolean> visibilityOfDateRangeInSelectionArea(String dateRange, boolean visible) {
+    public static ExpectedCondition<Boolean> visibilityOfDateRangeInSelectionArea(String dateRangeName, boolean visible) {
 
         if (visible) {
-            return new ConditionalWaitUntilDateRangeVisibleInSelectionArea(dateRange);
+            return new ConditionalWaitUntilDateRangeVisibleInSelectionArea(dateRangeName);
         } else {
-            return new ConditionalWaitUntilDateRangeRemovedFromSelectionArea(dateRange);
+            return new ConditionalWaitUntilDateRangeRemovedFromSelectionArea(dateRangeName);
         }
     }
 
-    public static ExpectedCondition<Boolean> selectionOfDateRangeInFilter(String dateRange, boolean selected) {
+    public static ExpectedCondition<Boolean> selectionOfDateRangeInFilter(String dateRangeName, boolean selected) {
 
         if (selected) {
-            return new ConditionWaitUntilDateRangeSelected(dateRange);
+            return new ConditionWaitUntilDateRangeSelected(dateRangeName);
         } else {
             throw new RuntimeErrorException(null, "Not Implemented");
         }
@@ -153,8 +153,8 @@ public class ExtExpectedConditions {
     }
 
     //MEMBERS METHODS
-    public static ExpectedCondition<WebElement> visibilityOfMemberInFilter(String optionName) {
-        return new ConditionWaitUntilMemberVisibleInFilter(optionName);
+    public static ExpectedCondition<WebElement> visibilityOfMemberInFilter(String memberName) {
+        return new ConditionWaitUntilMemberVisibleInFilter(memberName);
     }
 
     public static ExpectedCondition<Boolean> selectionOfMember(String memberName) {

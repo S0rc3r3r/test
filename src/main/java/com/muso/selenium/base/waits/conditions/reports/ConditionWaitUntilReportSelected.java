@@ -8,14 +8,14 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.muso.pages.General.PageLocators;
 import com.muso.selenium.base.waits.conditions.products.ConditionWaitUntilProductSelected;
 import com.paulhammant.ngwebdriver.ByAngular;
 import com.paulhammant.ngwebdriver.NgWebDriver;
 
-public class ConditionWaitUntilReportSelected implements ExpectedCondition<Boolean> {
+public class ConditionWaitUntilReportSelected extends PageLocators implements ExpectedCondition<Boolean> {
 
     private String name;
-    private String holder = "muso-report-filter ul.dropdown-menu.inner li";
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionWaitUntilProductSelected.class);
 
     public ConditionWaitUntilReportSelected(String name) {
@@ -29,7 +29,7 @@ public class ConditionWaitUntilReportSelected implements ExpectedCondition<Boole
 
         ByAngular.Factory factory = ngwd.makeByAngularFactory();
 
-        WebElement elem = driver.findElement(factory.cssContainingText(holder, name));
+        WebElement elem = driver.findElement(factory.cssContainingText(reportHolderItems_CSS, name));
 
         try {
             if (elem.getText().equals(name) && elem.getAttribute("class").equals("selected"))

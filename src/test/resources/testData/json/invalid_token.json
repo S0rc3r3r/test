@@ -1,0 +1,6 @@
+{
+    "description" : "7249 invalid token",
+    "username" : "invalid_token",
+    "password":"CYVZ+0z0dXUIMBDpGkw41w==",
+    "jwt_token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOjcyNDksImNyZWF0ZWQiOjE1MDc4NzEzNTYyNjIsInNlcnZpY2VzIjpbeyJlehbpcnlEYXRlIjpudWxsLCJzZXJ2aWNlVHlwZSI6Ik1BUktFVF9BTkFMWVRJQ1MifSx7ImV4cGlyeURhdGUiOm51bGwsInNlcnZpY2VUeXBlIjoiQ09SRV9NQU5BR0VEIn1dfQ.zWkLkGD4Udnnz4DDm6GHTPU6XE8jWew1dM9-bSte7d_kspJGLymLnKc4FoBfC3sgvUTGLMXEfvrGpubzVbYZWw"
+}

@@ -12,6 +12,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,7 @@ public class RemovalDetailsFrame {
             DateUtils.getInstance();
             Date tableDate = DateUtils.dateFromString(tableValue);
             if (dateFilter.after(tableDate) || (tableDate.after(DateUtils.getInstance().getDateNow()))) {
-                LOGGER.warn(tableValue + " is not in the Date Range filter range");
+                LOGGER.warn(tableValue + " is not in the Date Range filter range (" + dateFilter + ")");
                 return false;
             }
         }
@@ -132,10 +134,12 @@ public class RemovalDetailsFrame {
 
         ArrayList<String> columnValues = new ArrayList<String>();
 
-        List<WebElement> tableRows = antiPiracy_tableBody.findElements(By.cssSelector("tr"));
+        List<WebElement> tableRows = (new WebDriverWait(driver, 10)).until(ExpectedConditions.numberOfElementsToBeMoreThan(By.cssSelector("muso-infringements-data-table tbody tr"), 1));
 
         for (WebElement row : tableRows) {
-            String columnValue = row.findElement(By.cssSelector("td:nth-child(" + (columnIndex + 1) + ")")).getText();
+            WebElement columnElement = (new WebDriverWait(driver, 10)).until(ExpectedConditions.presenceOfNestedElementLocatedBy(row, By.cssSelector("td:nth-child(" + (columnIndex + 1) + ")")));
+            //  String columnValue = row.findElement(By.cssSelector("td:nth-child(" + (columnIndex + 1) + ")")).getText();
+            String columnValue = columnElement.getText();
             LOGGER.debug("Found '{}' in {} from {} table", columnValue, columnName, Table.REMOVAL_DETAILS.getTableName());
             columnValues.add(columnValue);
         }
