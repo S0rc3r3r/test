@@ -667,6 +667,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             List<String> searchResults = getTypeOptions();
 
             for (String result : searchResults) {
+                ThreadHandler.shortSleep();
                 setType(result);
             }
         } catch (InvalidElementStateException ex) {
@@ -689,6 +690,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             List<String> searchResults = getProductOptions();
 
             for (String result : searchResults) {
+                ThreadHandler.shortSleep();
                 setProduct(result);
             }
         } catch (InvalidElementStateException ex) {
@@ -711,6 +713,7 @@ public abstract class InfringementSummaryPageBase extends AbstractBasePage {
             List<String> searchResults = getCampaignOptions();
 
             for (String result : searchResults) {
+                ThreadHandler.shortSleep();
                 setCampaign(result);
             }
         } catch (InvalidElementStateException ex) {

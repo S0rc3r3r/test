@@ -46,7 +46,7 @@ public class Hooks {
     private static final String DEFAULT_OS = System.getProperty("os.name");
     private static final String DEFAULT_OS_VERSION = System.getProperty("os.version");
     private static final String DEFAULT_JENKINS_BUILD = "Local";
-    private static final String DEFAULT_APPLICATION_URL = "http://localhost:4200";
+    private static final String DEFAULT_APPLICATION_URL = "http://muso-dashboard-qa.s3-website-eu-west-1.amazonaws.com";
     private static final String DEFAULT_BROWSERSTACK_USER = "tanasoiubogdan1";
     private static final String DEFAULT_BROWSERSTACK_ACCESSKEY = "Wqgm52qvGRiroSxFoxxF";
     private static final String DEFAULT_BROWSERSTACK_USE_REAL_DEVICE = "true";
@@ -69,7 +69,7 @@ public class Hooks {
 
     @Before
     public void init(Scenario scenario) throws MalformedURLException {
-
+        LOGGER.info("--------------------------------------------");
         LOGGER.info("Starting Sccenario: {}", scenario.getName());
         initVars();
         initCapabilities(scenario);
@@ -302,6 +302,9 @@ public class Hooks {
 
         PersistenceManager.getInstance().clear();
         driver.quit();
+        System.out.println();
+        System.out.println();
+        System.out.println();
     }
 
     public void updateBrowserStackStatus(Boolean isFailed) {
